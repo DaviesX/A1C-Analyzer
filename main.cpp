@@ -1,11 +1,14 @@
 #include "mainwindow.h"
+#include "tst_testlinkedlist.h"
 #include <QApplication>
 
 int main(int argc, char *argv[])
 {
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+        test_linked_list();
 
-    return a.exec();
+        QApplication a(argc, argv);
+        MainWindow w;
+        w.show();
+
+        return a.exec();
 }

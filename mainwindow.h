@@ -1,3 +1,5 @@
+/* @author: Zhaonian Luan, Copyright 2016 */
+
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
@@ -23,6 +25,8 @@ private slots:
     void on_lab_triggered();
 
     void on_order_triggered();
+
+    void on_reset_clicked();
 
 private:
     Ui::MainWindow *ui;

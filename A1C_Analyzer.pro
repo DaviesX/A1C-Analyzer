@@ -6,6 +6,8 @@
 
 QT       += core gui
 
+CONFIG  += c++14
+
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = A1C_Analyzer
@@ -13,8 +15,14 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        mainwindow.cpp
+        mainwindow.cpp \
+    linkedlist.cpp \
+    bst.cpp \
+    tst_testlinkedlist.cpp
 
-HEADERS  += mainwindow.h
+HEADERS  += mainwindow.h \
+    linkedlist.h \
+    bst.h \
+    tst_testlinkedlist.h
 
 FORMS    += mainwindow.ui

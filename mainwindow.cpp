@@ -35,3 +35,8 @@ void MainWindow::on_order_triggered()
 {
     cout << "order triggered!" << endl;
 }
+
+void MainWindow::on_reset_clicked()
+{
+    cout << "reset clicked!" << endl;
+}
