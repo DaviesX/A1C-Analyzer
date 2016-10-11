@@ -18,11 +18,13 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     linkedlist.cpp \
     bst.cpp \
-    tst_testlinkedlist.cpp
+    tst_testlinkedlist.cpp \
+    tst_testbst.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
     bst.h \
-    tst_testlinkedlist.h
+    tst_testlinkedlist.h \
+    tst_testbst.h
 
 FORMS    += mainwindow.ui
