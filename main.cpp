@@ -6,7 +6,7 @@
 int main(int argc, char *argv[])
 {
 //        test_linked_list();
-        test_bst();
+        test_bst_speed();
 
         QApplication a(argc, argv);
         MainWindow w;

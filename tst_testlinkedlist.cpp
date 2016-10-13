@@ -18,3 +18,8 @@ void test_linked_list()
         ln.remove(3);
         std::cout << ln << std::endl;
 }
+
+//void test_linked_list_speed();
+//{
+
+//}
