@@ -5,6 +5,7 @@
 #include <vector>
 #include "medicationorder.h"
 #include "labmeasure.h"
+#include "deltaanalysis.h"
 
 #define COL_DELIM       ','
 
@@ -13,6 +14,7 @@ class CSV
 public:
         void            load_medication_order(const std::string& filename, std::vector<MedicationOrder>& orders) const;
         void            load_lab_measure(const std::string& filename, std::vector<LabMeasure>& measures) const;
+        void            write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis>& analysis) const;
 private:
         void            load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows) const;
 };

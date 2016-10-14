@@ -7,6 +7,7 @@
 #include <sstream>
 #include "medicationorder.h"
 #include "labmeasure.h"
+#include "deltaanalysis.h"
 #include "csv.h"
 
 
@@ -115,4 +116,21 @@ void CSV::load_lab_measure(const std::string& filename, std::vector<LabMeasure>&
                         }
                 }
         }
+}
+
+void CSV::write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis>& analysis) const
+{
+        std::ofstream file(filename);
+        if (!file.is_open())
+                throw "Failed to write to " + filename;
+        file << "Id, Order ID, Order Category, Order Description, Delta, A1C" << std::endl;
+        for (DeltaAnalysis delta: analysis) {
+                file << delta.patient_id() << ","
+                     << delta.oid() << ","
+                     << delta.category() << ","
+                     << delta.desc() << ","
+                     << delta.time_offset() << ","
+                     << delta.a1c() << std::endl;
+        }
+        file.close();
 }

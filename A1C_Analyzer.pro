@@ -24,7 +24,8 @@ SOURCES += main.cpp\
     medicationorder.cpp \
     csv.cpp \
     linkedbst.cpp \
-    tst_testcsv.cpp
+    tst_testcsv.cpp \
+    deltaanalysis.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -35,6 +36,7 @@ HEADERS  += mainwindow.h \
     medicationorder.h \
     csv.h \
     linkedbst.h \
-    tst_testcsv.h
+    tst_testcsv.h \
+    deltaanalysis.h
 
 FORMS    += mainwindow.ui
