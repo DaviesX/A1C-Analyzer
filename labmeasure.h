@@ -13,6 +13,7 @@ public:
                    unsigned date_offset,
                    const std::string& lab_desc,
                    float a1c);
+        LabMeasure(unsigned patient_id);
 
         unsigned        pid() const;
         bool            lt(const LabMeasure& rhs) const;

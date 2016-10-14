@@ -13,6 +13,11 @@ LabMeasure::LabMeasure(unsigned patient_id,
         m_a1c = a1c;
 }
 
+LabMeasure::LabMeasure(unsigned patient_id)
+{
+        m_patient_id = patient_id;
+}
+
 unsigned LabMeasure::pid() const
 {
         return m_patient_id;

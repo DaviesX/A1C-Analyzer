@@ -15,6 +15,10 @@ MedicationOrder::MedicationOrder(unsigned patiend_id,
         m_date_offset = date_offset;
 }
 
+MedicationOrder::MedicationOrder(unsigned patiend_id)
+{
+        m_patient_id = patiend_id;
+}
 
 unsigned MedicationOrder::pid() const
 {

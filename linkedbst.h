@@ -44,10 +44,10 @@ void LinkedBST<T>::insert(const T& value)
         Node* current_node = root;
         Node* old_node = nullptr;
         while (current_node != nullptr) {
-                if (current_node->value.front().gt(value)) {
+                if (current_node->value.front()->gt(value)) {
                         old_node = current_node;
                         current_node = current_node->left;
-                } else if (current_node->value.front().lt(value)) {
+                } else if (current_node->value.front()->lt(value)) {
                         old_node = current_node;
                         current_node = current_node->right;
                 } else {
@@ -65,7 +65,7 @@ void LinkedBST<T>::insert(const T& value)
         if (old_node == nullptr)
                 root = new_node;
         else {
-                if (old_node->value <= value)
+                if (old_node->value.front()->lt(value))
                         old_node->right = new_node;
                 else
                         old_node->left = new_node;

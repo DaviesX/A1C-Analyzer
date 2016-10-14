@@ -13,6 +13,7 @@ public:
                         const std::string& med_desc,
                         const std::string& med_categ,
                         unsigned date_offset);
+        MedicationOrder(unsigned patiend_id);
 
         unsigned        pid() const;
         bool            lt(const MedicationOrder& rhs) const;

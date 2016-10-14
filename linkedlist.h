@@ -21,6 +21,7 @@ private:
         class Node
         {
         public:
+                Node(T v): value(v) {}
                 T       value;
                 Node*   next;
         };
@@ -47,8 +48,7 @@ T* LinkedList<T>::front()
 template <class T>
 void LinkedList<T>::push_front(const T& value)
 {
-        Node* new_node = new Node;
-        new_node->value = value;
+        Node* new_node = new Node(value);
         new_node->next = head;
         head = new_node;
 }

@@ -25,7 +25,9 @@ SOURCES += main.cpp\
     csv.cpp \
     linkedbst.cpp \
     tst_testcsv.cpp \
-    deltaanalysis.cpp
+    deltaanalysis.cpp \
+    analyzer.cpp \
+    tst_testanalysis.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -37,6 +39,8 @@ HEADERS  += mainwindow.h \
     csv.h \
     linkedbst.h \
     tst_testcsv.h \
-    deltaanalysis.h
+    deltaanalysis.h \
+    analyzer.h \
+    tst_testanalysis.h
 
 FORMS    += mainwindow.ui
