@@ -29,8 +29,6 @@ void test_bst_speed()
         std::clock_t i_end;
         std::clock_t f_start;
         std::clock_t f_end;
-        std::clock_t r_start;
-        std::clock_t r_end;
 
         double duration;
         i_start = std::clock();

@@ -1,7 +1,8 @@
 #ifndef BST_H
 #define BST_H
-#include "linkedlist.h"
 
+
+#include <ostream>
 
 template <class T>
 class BST

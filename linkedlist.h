@@ -13,6 +13,7 @@ class LinkedList
 public:
         LinkedList();
         ~LinkedList();
+        T*              front();
         void            push_front(const T& value);
         T*              find(const T& value);
         void            remove(const T& value);
@@ -35,6 +36,12 @@ LinkedList<T>::LinkedList()
 template <class T>
 LinkedList<T>::~LinkedList()
 {
+}
+
+template <class T>
+T* LinkedList<T>::front()
+{
+        return head != nullptr ? &head->value : nullptr;
 }
 
 template <class T>

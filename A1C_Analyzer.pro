@@ -19,12 +19,22 @@ SOURCES += main.cpp\
     linkedlist.cpp \
     bst.cpp \
     tst_testlinkedlist.cpp \
-    tst_testbst.cpp
+    tst_testbst.cpp \
+    labmeasure.cpp \
+    medicationorder.cpp \
+    csv.cpp \
+    linkedbst.cpp \
+    tst_testcsv.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
     bst.h \
     tst_testlinkedlist.h \
-    tst_testbst.h
+    tst_testbst.h \
+    labmeasure.h \
+    medicationorder.h \
+    csv.h \
+    linkedbst.h \
+    tst_testcsv.h
 
 FORMS    += mainwindow.ui
