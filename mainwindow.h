@@ -4,6 +4,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QFileDialog>
+#include <QFile>
+#include <iostream>
+using namespace std;
 
 namespace Ui {
 class MainWindow;
@@ -16,11 +20,12 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
+    vector<QString> lab_files;
+    vector<QString> order_files;
 
 private slots:
 
     void on_start_clicked();
-    void open_lab();
 
     void on_lab_triggered();
 
