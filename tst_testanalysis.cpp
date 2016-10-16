@@ -15,10 +15,12 @@ void test_delta_analysis()
         csv::load_lab_measure("lab.csv", measures);
 
         std::vector<DeltaAnalysis> delta;
-        delta_analysis(measures, orders, delta);
+        std::vector<DeltaAnalysis> filtered;
+        analysis::delta(measures, orders, delta);
+        analysis::filter(delta, 7.0f, filtered);
 
-        for (auto d: delta)
+        for (auto d: filtered)
                 std::cout << d << std::endl;
 
-        csv::write_delta_analysis("delta.csv", delta);
+        csv::write_delta_analysis("delta.csv", filtered);
 }

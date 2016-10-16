@@ -12,6 +12,9 @@
 #include "timeddata.h"
 
 
+namespace analysis
+{
+
 template <typename T>
 static void shuffle(std::vector<T>& objs)
 {
@@ -35,8 +38,8 @@ void merge_into_delta(unsigned pid,
                       std::vector<MedicationOrder>& a_orders,
                       std::vector<DeltaAnalysis>& delta)
 {
-        std::sort(a_labs.begin(), a_labs.end(), cmp<LabMeasure>);
-        std::sort(a_orders.begin(), a_orders.end(), cmp<MedicationOrder>);
+        std::sort(a_labs.begin(), a_labs.end(), analysis::cmp<LabMeasure>);
+        std::sort(a_orders.begin(), a_orders.end(), analysis::cmp<MedicationOrder>);
 
         unsigned j = 0;
         for (unsigned i = 0; i < a_labs.size() - 1; i ++) {
@@ -55,10 +58,10 @@ void merge_into_delta(unsigned pid,
         }
 }
 
-void delta_analysis(std::vector<LabMeasure>& measures, std::vector<MedicationOrder>& orders, std::vector<DeltaAnalysis>& delta)
+void delta(std::vector<LabMeasure>& measures, std::vector<MedicationOrder>& orders, std::vector<DeltaAnalysis>& delta)
 {
-        ::shuffle<LabMeasure>(measures);
-        ::shuffle<MedicationOrder>(orders);
+        analysis::shuffle<LabMeasure>(measures);
+        analysis::shuffle<MedicationOrder>(orders);
 
         BST<unsigned> all_patient_data;
         for (LabMeasure measure: measures)
@@ -92,6 +95,16 @@ void delta_analysis(std::vector<LabMeasure>& measures, std::vector<MedicationOrd
                 p_measures->extract(a_labs);
                 p_orders->extract(a_orders);
 
-                merge_into_delta(pid, a_labs, a_orders, delta);
+                analysis::merge_into_delta(pid, a_labs, a_orders, delta);
         }
+}
+
+void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vector<DeltaAnalysis>& filtered)
+{
+        for (DeltaAnalysis d: delta) {
+                if (d.a1c() >= a1c_margin)
+                        filtered.push_back(d);
+        }
+}
+
 }
