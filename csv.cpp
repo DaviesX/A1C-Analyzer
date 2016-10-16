@@ -12,6 +12,8 @@
 #include "csv.h"
 
 
+namespace csv
+{
 
 static void split(const std::string &s, char delim, std::vector<std::string> &elems)
 {
@@ -27,11 +29,11 @@ static void split(const std::string &s, char delim, std::vector<std::string> &el
 static std::vector<std::string> split(const std::string &s, char delim)
 {
         std::vector<std::string> elems;
-        ::split(s, delim, elems);
+        csv::split(s, delim, elems);
         return elems;
 }
 
-void CSV::load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows) const
+static void load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows)
 {
         std::ifstream s(filename);
         if (!s.is_open())
@@ -40,7 +42,7 @@ void CSV::load_rows(const std::string& filename, std::vector<std::vector<std::st
         std::string line;
         while (!s.eof()) {
                 std::getline(s, line);
-                rows.push_back(::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM));
+                rows.push_back(csv::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM));
         }
 
         s.close();
@@ -57,24 +59,24 @@ static bool set_column_mapping(const std::string& key, const std::vector<std::st
         return false;
 }
 
-void CSV::load_medication_order(const std::string& filename, std::vector<MedicationOrder>& orders) const
+void load_medication_order(const std::string& filename, std::vector<MedicationOrder>& orders)
 {
         std::vector<std::vector<std::string>> rows;
-        load_rows(filename, rows);
+        csv::load_rows(filename, rows);
 
         bool first_row = true;
         std::map<std::string, unsigned> col_map;
         for (std::vector<std::string> parts: rows) {
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
-                        if (!::set_column_mapping("OrderDate_Days", ddl, col_map))
-                                throw "Column OrderDate_Days doesn't exist";
-                        if (!::set_column_mapping("Id", ddl, col_map))
-                                throw "Column Id doesn't exist";
-                        if (!::set_column_mapping("TherapeuticCategory", ddl, col_map))
-                                throw "Column TherapeuticCategory doesn't exist";
-                        if (!::set_column_mapping("GenericItemName", ddl, col_map))
-                                throw "Column GenericItemName doesn't exist";
+                        if (!csv::set_column_mapping("OrderDate_Days", ddl, col_map))
+                                throw "This is not a medication order file: Column OrderDate_Days doesn't exist";
+                        if (!csv::set_column_mapping("Id", ddl, col_map))
+                                throw "This is not a medication order file: Column Id doesn't exist";
+                        if (!csv::set_column_mapping("TherapeuticCategory", ddl, col_map))
+                                throw "This is not a medication order file: Column TherapeuticCategory doesn't exist";
+                        if (!csv::set_column_mapping("GenericItemName", ddl, col_map))
+                                throw "This is not a medication order file: Column GenericItemName doesn't exist";
                         first_row = false;
                 } else {
                         if (parts.size() > 0) {
@@ -88,10 +90,10 @@ void CSV::load_medication_order(const std::string& filename, std::vector<Medicat
         }
 }
 
-void CSV::load_lab_measure(const std::string& filename, std::vector<LabMeasure>& measures) const
+void load_lab_measure(const std::string& filename, std::vector<LabMeasure>& measures)
 {
         std::vector<std::vector<std::string>> rows;
-        load_rows(filename, rows);
+        csv::load_rows(filename, rows);
 
         bool first_row = true;
         std::map<std::string, unsigned> col_map;
@@ -99,14 +101,14 @@ void CSV::load_lab_measure(const std::string& filename, std::vector<LabMeasure>&
         for (std::vector<std::string> parts: rows) {
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
-                        if (!::set_column_mapping("Id", ddl, col_map))
-                                throw "Column Id doesn't exist";
-                        if (!::set_column_mapping("Result", ddl, col_map))
-                                throw "Column Result doesn't exist";
-                        if (!::set_column_mapping("Observation", ddl, col_map))
-                                throw "Column Observation doesn't exist";
-                        if (!::set_column_mapping("Result_Days", ddl, col_map))
-                                throw "Column Result_Days doesn't exist";
+                        if (!csv::set_column_mapping("Id", ddl, col_map))
+                                throw "This is not a lab test file: Column Id doesn't exist";
+                        if (!csv::set_column_mapping("Result", ddl, col_map))
+                                throw "This is not a lab test file: Column Result doesn't exist";
+                        if (!csv::set_column_mapping("Observation", ddl, col_map))
+                                throw "This is not a lab test file: Column Observation doesn't exist";
+                        if (!csv::set_column_mapping("Result_Days", ddl, col_map))
+                                throw "This is not a lab test file: Column Result_Days doesn't exist";
                         min = std::max(min, col_map["Id"]);
                         min = std::max(min, col_map["Result"]);
                         min = std::max(min, col_map["Observation"]);
@@ -133,7 +135,7 @@ static std::string purify(const std::string& s)
         return r;
 }
 
-void CSV::write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis>& analysis) const
+void write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis>& analysis)
 {
         std::ofstream file(filename);
         if (!file.is_open())
@@ -142,11 +144,13 @@ void CSV::write_delta_analysis(const std::string& filename, std::vector<DeltaAna
         for (DeltaAnalysis delta: analysis) {
                 file << delta.patient_id() << ","
                      << delta.oid() << ","
-                     << ::purify(delta.category()) << ","
-                     << ::purify(delta.desc()) << ","
-                     << ::purify(delta.lab_desc()) << ","
+                     << csv::purify(delta.category()) << ","
+                     << csv::purify(delta.desc()) << ","
+                     << csv::purify(delta.lab_desc()) << ","
                      << delta.time_offset() << ","
                      << delta.a1c() << std::endl;
         }
         file.close();
+}
+
 }
