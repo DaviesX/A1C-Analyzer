@@ -4,6 +4,7 @@
 #define LINKEDLIST_H
 
 #include <ostream>
+#include <vector>
 
 
 template <class T>
@@ -17,6 +18,7 @@ public:
         void            push_front(const T& value);
         T*              find(const T& value);
         void            remove(const T& value);
+        void            extract(std::vector<T>& values) const;
 private:
         class Node
         {
@@ -84,6 +86,16 @@ void LinkedList<T>::remove(const T& value)
                 }
                 previous_node = current_node;
                 current_node = current_node->next;
+        }
+}
+
+template <class T>
+void LinkedList<T>::extract(std::vector<T>& values) const
+{
+        auto node = head;
+        while (node != nullptr) {
+                values.push_back(node->value);
+                node = node->next;
         }
 }
 

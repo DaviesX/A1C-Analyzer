@@ -6,6 +6,7 @@ DeltaAnalysis::DeltaAnalysis(unsigned oid,
                              unsigned time_offset,
                              const std::string& category,
                              const std::string& desc,
+                             const std::string& lab_desc,
                              float a1c)
 {
         m_oid = oid;
@@ -13,6 +14,7 @@ DeltaAnalysis::DeltaAnalysis(unsigned oid,
         m_time_offset = time_offset;
         m_categ = category;
         m_desc = desc;
+        m_lab_desc = lab_desc;
         m_a1c = a1c;
 }
 
@@ -39,6 +41,11 @@ const std::string& DeltaAnalysis::category() const
 const std::string& DeltaAnalysis::desc() const
 {
         return m_desc;
+}
+
+const std::string& DeltaAnalysis::lab_desc() const
+{
+        return m_lab_desc;
 }
 
 float DeltaAnalysis::a1c() const

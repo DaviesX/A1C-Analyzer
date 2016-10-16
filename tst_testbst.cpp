@@ -23,36 +23,55 @@ void test_bst()
 }
 
 
+template <typename T>
+static void shuffle(std::vector<T>& objs)
+{
+        const unsigned n = objs.size();
+        for (unsigned i = 1; i < n; i ++) {
+                unsigned r = rand()/(float) RAND_MAX * i;
+                T tmp = objs[i];
+                objs[i] = objs[r];
+                objs[r] = tmp;
+        }
+}
+
 void test_bst_speed()
 {
         std::clock_t i_start;
         std::clock_t i_end;
         std::clock_t f_start;
         std::clock_t f_end;
+        const unsigned n = 80000;
 
         double duration;
         i_start = std::clock();
 
+        std::vector<unsigned> nums;
+        for (unsigned i = 0; i < n; i ++) {
+                nums.push_back(i);
+        }
+        ::shuffle<unsigned>(nums);
+
         BST<int> bst;
         int i = 0;
-        while (i < 80000) {
-                bst.insert(i);
+        while (i < n) {
+                bst.insert(nums[i]);
                 i++;
         }
         i_end =  std::clock();
-        duration = ( i_end - i_start ) / (double) CLOCKS_PER_SEC;
-        std::cout<<"Insertion: "<< duration <<'\n';
+        duration = (i_end - i_start) / (double) CLOCKS_PER_SEC;
+        std::cout << "Insertion: " << duration << std::endl;
 
 
         f_start = std::clock();
         int j = 0;
-        while (j <80000) {
-                bst.find(j);
+        while (j < n) {
+                bst.find(nums[j]);
                 j++;
         }
         f_end = std::clock();
         duration = (f_end - f_start ) / (double) CLOCKS_PER_SEC;
-        std::cout<<"Search: "<< duration <<'\n';
+        std::cout << "Search: " << duration << std::endl;
 
 
 //        r_start = std::clock();
@@ -64,9 +83,5 @@ void test_bst_speed()
 //        r_end = std::clock();
 //        duration = (r_end - r_start ) / (double) CLOCKS_PER_SEC;
 //        std::cout<<"Removal: "<< duration <<'\n';
-
-
-
-
 }
 

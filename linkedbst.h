@@ -14,16 +14,28 @@ public:
         LinkedBST();
         ~LinkedBST();
 
-        void    insert(const T& value);
-        T*      find(const T& value);
-        void    remove(const T& value);
+        void            insert(const T& value);
+        LinkedList<T>*  find(const T& value);
+        void            remove(const T& value);
 
 private:
-        struct Node {
+        struct Node
+        {
                 LinkedList<T>   value;
                 Node*           left;
                 Node*           right;
+
+               bool operator < (const T& value)
+               {
+                       return *this->value.front() < value;
+               }
+
+               bool operator > (const T& value)
+               {
+                       return *this->value.front() > value;
+               }
         };
+
         Node*   root = nullptr;
 };
 
@@ -44,10 +56,10 @@ void LinkedBST<T>::insert(const T& value)
         Node* current_node = root;
         Node* old_node = nullptr;
         while (current_node != nullptr) {
-                if (current_node->value.front()->gt(value)) {
+                if (*current_node > value) {
                         old_node = current_node;
                         current_node = current_node->left;
-                } else if (current_node->value.front()->lt(value)) {
+                } else if (*current_node < value) {
                         old_node = current_node;
                         current_node = current_node->right;
                 } else {
@@ -65,7 +77,7 @@ void LinkedBST<T>::insert(const T& value)
         if (old_node == nullptr)
                 root = new_node;
         else {
-                if (old_node->value.front()->lt(value))
+                if (*old_node < value)
                         old_node->right = new_node;
                 else
                         old_node->left = new_node;
@@ -73,16 +85,16 @@ void LinkedBST<T>::insert(const T& value)
 }
 
 template <class T>
-T* LinkedBST<T>::find(const T& value)
+LinkedList<T>* LinkedBST<T>::find(const T& value)
 {
         Node* current_node = root;
         while (current_node != nullptr) {
-                if (current_node->value.front().gt(value)) {
+                if (*current_node > value) {
                         current_node = current_node->left;
-                } else if (current_node->value.front().lt(value)) {
+                } else if (*current_node < value) {
                         current_node = current_node->right;
                 } else {
-                        return current_node->value.front();
+                        return &current_node->value;
                 }
         }
         return nullptr;

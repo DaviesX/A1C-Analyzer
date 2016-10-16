@@ -23,10 +23,10 @@ void test_csv()
         }*/
 
         std::vector<DeltaAnalysis> delta;
-        delta.push_back(DeltaAnalysis(1111, 1, 5, "a1c", "null", 6.7));
-        delta.push_back(DeltaAnalysis(1112, 1, 6, "a1c", "null", 8.7));
-        delta.push_back(DeltaAnalysis(1113, 3, 9, "a1c", "null", 3.2));
-        delta.push_back(DeltaAnalysis(1114, 3, 2, "a1c", "null", 6.9));
-        delta.push_back(DeltaAnalysis(1115, 5, 1, "a1c", "null", 6.4));
+        delta.push_back(DeltaAnalysis(1111, 1, 5, "a1c", "null", "null2", 6.7));
+        delta.push_back(DeltaAnalysis(1112, 1, 6, "a1c", "null", "null2", 8.7));
+        delta.push_back(DeltaAnalysis(1113, 3, 9, "a1c", "null", "null2", 3.2));
+        delta.push_back(DeltaAnalysis(1114, 3, 2, "a1c", "null", "null2", 6.9));
+        delta.push_back(DeltaAnalysis(1115, 5, 1, "a1c", "null", "null2", 6.4));
         csv.write_delta_analysis("delta.csv", delta);
 }

@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-CONFIG  += c++14
+QMAKE_CXXFLAGS += -std=c++1y
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -27,7 +27,8 @@ SOURCES += main.cpp\
     tst_testcsv.cpp \
     deltaanalysis.cpp \
     analyzer.cpp \
-    tst_testanalysis.cpp
+    tst_testanalysis.cpp \
+    timeddata.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -41,6 +42,9 @@ HEADERS  += mainwindow.h \
     tst_testcsv.h \
     deltaanalysis.h \
     analyzer.h \
-    tst_testanalysis.h
+    tst_testanalysis.h \
+    timeddata.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES +=

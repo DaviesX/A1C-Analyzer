@@ -4,8 +4,9 @@
 
 #include <string>
 #include <ostream>
+#include "timeddata.h"
 
-class LabMeasure
+class LabMeasure: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const LabMeasure& measure);
 public:
@@ -14,10 +15,14 @@ public:
                    const std::string& lab_desc,
                    float a1c);
         LabMeasure(unsigned patient_id);
+        LabMeasure(const LabMeasure& other);
 
-        unsigned        pid() const;
-        bool            lt(const LabMeasure& rhs) const;
-        bool            gt(const LabMeasure& rhs) const;
+        unsigned                pid() const;
+        unsigned                time_offset() const;
+        const std::string&      desc() const;
+        float                   a1c() const;
+        bool            operator <(const LabMeasure& rhs) const;
+        bool            operator >(const LabMeasure& rhs) const;
 private:
         unsigned        m_patient_id;
         unsigned        m_date_offset;
@@ -25,7 +30,7 @@ private:
         float           m_a1c;
 };
 
-inline std::ostream& operator<<(std::ostream& os, const LabMeasure& measure)
+inline std::ostream& operator <<(std::ostream& os, const LabMeasure& measure)
 {
         os << "LabMeasure = ["
            << measure.m_patient_id << ","

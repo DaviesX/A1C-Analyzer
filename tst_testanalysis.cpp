@@ -1,3 +1,4 @@
+#include <iostream>
 #include "csv.h"
 #include "deltaanalysis.h"
 #include "analyzer.h"
@@ -15,6 +16,9 @@ void test_delta_analysis()
 
         std::vector<DeltaAnalysis> delta;
         delta_analysis(measures, orders, delta);
+
+        for (auto d: delta)
+                std::cout << d << std::endl;
 
         csv.write_delta_analysis("delta.csv", delta);
 }

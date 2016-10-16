@@ -4,8 +4,9 @@
 
 #include <string>
 #include <ostream>
+#include "timeddata.h"
 
-class MedicationOrder
+class MedicationOrder: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const MedicationOrder& order);
 public:
@@ -14,10 +15,16 @@ public:
                         const std::string& med_categ,
                         unsigned date_offset);
         MedicationOrder(unsigned patiend_id);
+        MedicationOrder(const MedicationOrder& other);
 
-        unsigned        pid() const;
-        bool            lt(const MedicationOrder& rhs) const;
-        bool            gt(const MedicationOrder& rhs) const;
+        unsigned                time_offset() const;
+        unsigned                oid() const;
+        unsigned                pid() const;
+        const std::string&      category() const;
+        const std::string&      desc() const;
+
+        bool            operator <(const MedicationOrder& rhs) const;
+        bool            operator >(const MedicationOrder& rhs) const;
 private:
         unsigned        m_order_id;
         unsigned        m_patient_id;
@@ -27,7 +34,7 @@ private:
 };
 
 
-inline std::ostream& operator<<(std::ostream& os, const MedicationOrder& order)
+inline std::ostream& operator <<(std::ostream& os, const MedicationOrder& order)
 {
         os << "MedicationOrder = [" << order.m_order_id << ","
            << order.m_patient_id << ","

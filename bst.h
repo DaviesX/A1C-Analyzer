@@ -3,6 +3,7 @@
 
 
 #include <ostream>
+#include <vector>
 
 template <class T>
 class BST
@@ -14,11 +15,14 @@ public:
         BST();
         ~BST();
 
-        void    insert(const T& value);
-        T*      find(const T& value);
-        void    remove(const T& value);
+        void            insert(const T& value);
+        T*              find(const T& value);
+        void            remove(const T& value);
+        void            extract(std::vector<T>& values) const;
 
 private:
+        void            copy_nodes(std::vector<T>& values, const typename BST<T>::Node* node) const;
+
         struct Node {
                 T   value;
                 Node*           left;
@@ -50,12 +54,15 @@ void BST<T>::insert(const T& value)
         Node* current_node = root;
         Node* old_node = nullptr;
         while (current_node != nullptr) {
-                if (value <= current_node->value) {
+                if (value < current_node->value) {
                         old_node = current_node;
                         current_node = current_node->left;
                 } else if (value > current_node->value) {
                         old_node = current_node;
                         current_node = current_node->right;
+                } else {
+                        current_node->value = value;
+                        return ;
                 }
         }
         // Insert to this position.
@@ -131,6 +138,24 @@ void BST<T>::remove(const T& value)
                 }
                 break;
         }
+}
+
+template <class T>
+void BST<T>::copy_nodes(std::vector<T>& values, const typename BST<T>::Node* node) const
+{
+        if (node == nullptr)
+                return;
+        else {
+                copy_nodes(values, node->left);
+                values.push_back(node->value);
+                copy_nodes(values, node->right);
+        }
+}
+
+template <class T>
+void BST<T>::extract(std::vector<T>& values) const
+{
+        copy_nodes(values, root);
 }
 
 template <typename K>
