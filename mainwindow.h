@@ -6,6 +6,9 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QFile>
+#include <QKeyEvent>
+#include <map>
+#include <utility>
 
 
 namespace Ui {
@@ -14,26 +17,28 @@ class MainWindow;
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+        Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = 0);
-    ~MainWindow();
-    std::vector<QString>        lab_files;
-    std::vector<QString>        order_files;
+        explicit MainWindow(QWidget *parent = 0);
+        ~MainWindow();
+
+        void keyPressEvent(QKeyEvent* event);
 
 private slots:
+        void on_lab_triggered();
 
-    void on_lab_triggered();
+        void on_order_triggered();
 
-    void on_order_triggered();
+        void on_analyze_triggered();
 
-    void on_analyze_triggered();
-
-    void on_clear_all_files_triggered();
+        void on_clear_all_files_triggered();
 
 private:
-    Ui::MainWindow *ui;
+        std::map<unsigned, std::string>         lab_files;
+        std::map<unsigned, std::string>         order_files;
+
+        Ui::MainWindow *ui;
 };
 
 #endif // MAINWINDOW_H
