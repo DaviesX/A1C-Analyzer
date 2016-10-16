@@ -1,55 +1,56 @@
-#include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <iostream>
 #include <vector>
 #include <QFileDialog>
 #include <QFile>
-using namespace std;
+#include "mainwindow.h"
+#include "ui_mainwindow.h"
+
 
 MainWindow::MainWindow(QWidget *parent) :
-    QMainWindow(parent),
-    ui(new Ui::MainWindow)
+        QMainWindow(parent),
+        ui(new Ui::MainWindow)
 {
-    ui->setupUi(this);
+        ui->setupUi(this);
 }
 
 MainWindow::~MainWindow()
 {
-    delete ui;
+        delete ui;
 }
-
-void MainWindow::on_start_clicked()
-{
-    cout << "start clicked!" << endl;
-}
-
 
 void MainWindow::on_lab_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Open File"),
-                                                    "C://",
-                                                    "CSV File (*.csv)");
-    this->lab_files.push_back(filename);
-    ui->listWidget->addItem("Lab: " + filename);
-    ui->listWidget->item(ui->listWidget->count()-1)->setForeground(Qt::green);
+        QString filename = QFileDialog::getOpenFileName(this,
+                                                        tr("Lab File"),
+                                                        ".",
+                                                        "CSV File (*.csv)");
+        if (filename.isEmpty())
+                return;
+        this->lab_files.push_back(filename);
+        ui->file_list->addItem("Lab: " + filename);
+        ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::green);
 }
 
 void MainWindow::on_order_triggered()
 {
-    QString filename = QFileDialog::getOpenFileName(this,
-                                                    tr("Open File"),
-                                                    "C://",
-                                                    "CSV File (*.csv)");
-    this->order_files.push_back(filename);
-    ui->listWidget->addItem("Order: " + filename);
-    ui->listWidget->item(ui->listWidget->count()-1)->setForeground(Qt::red);
+        QString filename = QFileDialog::getOpenFileName(this,
+                                                        tr("Medication Order File"),
+                                                        ".",
+                                                        "CSV File (*.csv)");
+        if (filename.isEmpty())
+                return;
+        this->order_files.push_back(filename);
+        ui->file_list->addItem("Order: " + filename);
+        ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::red);
 }
 
-void MainWindow::on_reset_clicked()
+void MainWindow::on_analyze_triggered()
 {
-    this->lab_files.clear();
-    this->order_files.clear();
-    ui->listWidget->clear();
 }
 
+void MainWindow::on_clear_all_files_triggered()
+{
+        this->lab_files.clear();
+        this->order_files.clear();
+        ui->file_list->clear();
+}

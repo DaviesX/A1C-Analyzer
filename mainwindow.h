@@ -7,7 +7,7 @@
 #include <QFileDialog>
 #include <QFile>
 #include <iostream>
-using namespace std;
+
 
 namespace Ui {
 class MainWindow;
@@ -20,18 +20,18 @@ class MainWindow : public QMainWindow
 public:
     explicit MainWindow(QWidget *parent = 0);
     ~MainWindow();
-    vector<QString> lab_files;
-    vector<QString> order_files;
+    std::vector<QString>        lab_files;
+    std::vector<QString>        order_files;
 
 private slots:
-
-    void on_start_clicked();
 
     void on_lab_triggered();
 
     void on_order_triggered();
 
-    void on_reset_clicked();
+    void on_analyze_triggered();
+
+    void on_clear_all_files_triggered();
 
 private:
     Ui::MainWindow *ui;
