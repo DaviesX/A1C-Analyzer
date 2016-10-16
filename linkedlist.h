@@ -19,6 +19,7 @@ public:
         T*              find(const T& value);
         void            remove(const T& value);
         void            extract(std::vector<T>& values) const;
+        void            clear();
 private:
         class Node
         {
@@ -39,6 +40,7 @@ LinkedList<T>::LinkedList()
 template <class T>
 LinkedList<T>::~LinkedList()
 {
+        clear();
 }
 
 template <class T>
@@ -97,6 +99,18 @@ void LinkedList<T>::extract(std::vector<T>& values) const
                 values.push_back(node->value);
                 node = node->next;
         }
+}
+
+template <class T>
+void LinkedList<T>::clear()
+{
+        Node* node = head;
+        while (node != nullptr) {
+                Node* tmp = node;
+                node = node->next;
+                delete tmp;
+        }
+        head = nullptr;
 }
 
 template <typename K>
