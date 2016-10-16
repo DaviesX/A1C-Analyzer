@@ -6,7 +6,6 @@
 #include <QMainWindow>
 #include <QFileDialog>
 #include <QFile>
-#include <iostream>
 
 
 namespace Ui {

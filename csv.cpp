@@ -70,13 +70,13 @@ void load_medication_order(const std::string& filename, std::vector<MedicationOr
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
                         if (!csv::set_column_mapping("OrderDate_Days", ddl, col_map))
-                                throw "This is not a medication order file: Column OrderDate_Days doesn't exist";
+                                throw filename + " is not a medication order file: Column OrderDate_Days doesn't exist";
                         if (!csv::set_column_mapping("Id", ddl, col_map))
-                                throw "This is not a medication order file: Column Id doesn't exist";
+                                throw filename + " is not a medication order file: Column Id doesn't exist";
                         if (!csv::set_column_mapping("TherapeuticCategory", ddl, col_map))
-                                throw "This is not a medication order file: Column TherapeuticCategory doesn't exist";
+                                throw filename + " is not a medication order file: Column TherapeuticCategory doesn't exist";
                         if (!csv::set_column_mapping("GenericItemName", ddl, col_map))
-                                throw "This is not a medication order file: Column GenericItemName doesn't exist";
+                                throw filename + " is not a medication order file: Column GenericItemName doesn't exist";
                         first_row = false;
                 } else {
                         if (parts.size() > 0) {
@@ -102,13 +102,13 @@ void load_lab_measure(const std::string& filename, std::vector<LabMeasure>& meas
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
                         if (!csv::set_column_mapping("Id", ddl, col_map))
-                                throw "This is not a lab test file: Column Id doesn't exist";
+                                throw filename + " is not a lab test file: Column Id doesn't exist";
                         if (!csv::set_column_mapping("Result", ddl, col_map))
-                                throw "This is not a lab test file: Column Result doesn't exist";
+                                throw filename + " is not a lab test file: Column Result doesn't exist";
                         if (!csv::set_column_mapping("Observation", ddl, col_map))
-                                throw "This is not a lab test file: Column Observation doesn't exist";
+                                throw filename + " is not a lab test file: Column Observation doesn't exist";
                         if (!csv::set_column_mapping("Result_Days", ddl, col_map))
-                                throw "This is not a lab test file: Column Result_Days doesn't exist";
+                                throw filename + " is not a lab test file: Column Result_Days doesn't exist";
                         min = std::max(min, col_map["Id"]);
                         min = std::max(min, col_map["Result"]);
                         min = std::max(min, col_map["Observation"]);
