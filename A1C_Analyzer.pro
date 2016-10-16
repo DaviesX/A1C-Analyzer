@@ -28,7 +28,8 @@ SOURCES += main.cpp\
     deltaanalysis.cpp \
     analyzer.cpp \
     tst_testanalysis.cpp \
-    timeddata.cpp
+    timeddata.cpp \
+    configdialog.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -43,8 +44,10 @@ HEADERS  += mainwindow.h \
     deltaanalysis.h \
     analyzer.h \
     tst_testanalysis.h \
-    timeddata.h
+    timeddata.h \
+    configdialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    configdialog.ui
 
 DISTFILES +=
