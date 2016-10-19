@@ -1,4 +1,6 @@
 #include <iostream>
+#include <string>
+#include <set>
 #include "csv.h"
 #include "deltaanalysis.h"
 #include "analyzer.h"
@@ -9,19 +11,26 @@ void test_delta_analysis()
 {
         std::vector<MedicationOrder> orders;
 
-        csv::load_medication_order("in_order.csv", orders);
-        csv::load_medication_order("out_order.csv", orders);
+        csv::load_medication_order("order.csv", orders);
+        csv::load_medication_order("order2.csv", orders);
 
         std::vector<LabMeasure> measures;
         csv::load_lab_measure("lab.csv", measures);
 
-        std::vector<DeltaAnalysis> delta;
-        std::vector<DeltaAnalysis> filtered;
-        analysis::delta(measures, orders, delta);
-        analysis::filter(delta, 7.0f, filtered);
+        LinkedBST<LabMeasure> cleaned_lab;
+        LinkedBST<MedicationOrder> cleaned_orders;
+        std::set<unsigned> lab_patients;
 
-        for (auto d: filtered)
-                std::cout << d << std::endl;
+        analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
+        analysis::preprocess(orders, cleaned_orders);
 
-        csv::write_delta_analysis("delta.csv", filtered);
+        std::vector<DeltaAnalysis> joined, delta;
+        analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
+        analysis::delta(joined, delta, 8.0f);
+
+        //for (auto d: delta)
+        //        std::cout << d << std::endl;
+
+        csv::write_delta_analysis("result.csv", delta);
 }
+

@@ -2,6 +2,7 @@
 #include <cstdlib>
 #include <ctime>
 #include <vector>
+#include <set>
 #include <algorithm>
 #include <string>
 #include <functional>
@@ -61,11 +62,6 @@ void merge_into_delta(unsigned pid,
 }
 
 std::hash<std::string> str_hash;
-/*
-unsigned str_hash(const std::string& s)
-{
-        return s.length();
-}*/
 
 struct TotalOrderKey
 {
@@ -113,49 +109,56 @@ struct TotalOrderKey
         unsigned        date;
 };
 
-void delta(std::vector<LabMeasure>& measures, std::vector<MedicationOrder>& orders, std::vector<DeltaAnalysis>& delta)
+
+void preprocess(std::vector<LabMeasure>& measures, const std::string& keyword, const float a1c_lvl,
+                std::set<unsigned>& lab_patients, LinkedBST<LabMeasure>& result)
 {
         analysis::shuffle<LabMeasure>(measures);
-        analysis::shuffle<MedicationOrder>(orders);
 
         BST<analysis::TotalOrderKey> existing_objs;
-        LinkedBST<MedicationOrder> order_data;
-        for (MedicationOrder order: orders) {
-                analysis::TotalOrderKey key(order);
-                if (!existing_objs.find(key)) {
-                        order_data.insert(order);
-                        existing_objs.insert(key);
-                }
-        }
-        existing_objs.clear();
-
-        BST<unsigned> lab_patients;
-        LinkedBST<LabMeasure> lab_data;
         std::locale loc;
         for (LabMeasure measure: measures) {
+                if (measure.a1c() < a1c_lvl)
+                        continue;
+
                 std::string upper("");
                 for (unsigned i = 0; i < measure.desc().length(); i ++)
                         upper += std::toupper(measure.desc().at(i), loc);
-                if (upper.find("A1C") != std::string::npos) {
-                        analysis::TotalOrderKey key(measure);
-                        if (!existing_objs.find(key)) {
-                                lab_data.insert(measure);
-                                existing_objs.insert(key);
-                                lab_patients.insert(measure.pid());
-                        }
+                if (upper.find(keyword) == std::string::npos)
+                        continue;
+
+                analysis::TotalOrderKey key(measure);
+                if (!existing_objs.find(key)) {
+                        existing_objs.insert(key);
+                        result.insert(measure);
+                        lab_patients.insert(measure.pid());
                 }
         }
-        existing_objs.clear();
+}
 
-        std::vector<unsigned> lab_patient_ids;
-        lab_patients.extract(lab_patient_ids);
-        lab_patients.clear();
+void preprocess(std::vector<MedicationOrder>& orders,
+                LinkedBST<MedicationOrder>& result)
+{
+        analysis::shuffle<MedicationOrder>(orders);
 
+        BST<analysis::TotalOrderKey> existing_objs;
+        for (MedicationOrder order: orders) {
+                analysis::TotalOrderKey key(order);
+                if (!existing_objs.find(key)) {
+                        existing_objs.insert(key);
+                        result.insert(order);
+                }
+        }
+}
+
+void join(LinkedBST<LabMeasure>& measures, std::set<unsigned>& lab_patients,
+          LinkedBST<MedicationOrder>& orders, std::vector<DeltaAnalysis>& join)
+{
         std::vector<LabMeasure> a_labs;
         std::vector<MedicationOrder> a_orders;
-        for (unsigned pid: lab_patient_ids) {
-                LinkedList<LabMeasure>* p_measures = lab_data.find(LabMeasure(pid));
-                LinkedList<MedicationOrder>* p_orders = order_data.find(MedicationOrder(pid));
+        for (unsigned pid: lab_patients) {
+                LinkedList<LabMeasure>* p_measures = measures.find(LabMeasure(pid));
+                LinkedList<MedicationOrder>* p_orders = orders.find(MedicationOrder(pid));
                 if (p_measures == nullptr || p_orders == nullptr)
                         continue;
                 a_labs.clear();
@@ -164,7 +167,7 @@ void delta(std::vector<LabMeasure>& measures, std::vector<MedicationOrder>& orde
                 p_measures->extract(a_labs);
                 p_orders->extract(a_orders);
 
-                analysis::merge_into_delta(pid, a_labs, a_orders, delta);
+                analysis::merge_into_delta(pid, a_labs, a_orders, join);
         }
 }
 
@@ -173,6 +176,22 @@ void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vect
         for (DeltaAnalysis d: delta) {
                 if (d.a1c() >= a1c_margin)
                         filtered.push_back(d);
+        }
+}
+
+void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& delta, float a1c_margin)
+{
+        unsigned last_id = -1;
+        unsigned last_date;
+        unsigned offset = 0;
+        for (unsigned i = 0; i < raw.size(); i ++) {
+                if (raw[i].patient_id() != last_id) {
+                        offset = 0;
+                        last_id = raw[i].patient_id();
+                        last_date = raw[i].time_offset();
+                }
+                offset += raw[i].time_offset() - last_date;
+                delta.push_back(DeltaAnalysis(raw[i], offset, raw[i].a1c() >= a1c_margin));
         }
 }
 

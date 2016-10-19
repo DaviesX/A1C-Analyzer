@@ -13,7 +13,7 @@ int main(int argc, char *argv[])
 //        test_linked_list();
 //        test_bst_speed();
 //        test_csv();
-//        test_delta_analysis();
+        test_delta_analysis();
 //        } catch (const std::string& ex) {
 //                std::cout << ex << std::endl;
 //        }

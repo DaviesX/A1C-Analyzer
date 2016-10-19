@@ -15,22 +15,23 @@
 namespace csv
 {
 
-static void split(const std::string &s, char delim, std::vector<std::string> &elems)
+static void split(const std::string& s, char delim, std::vector<std::string>& result)
 {
-        std::stringstream ss;
-        ss.str(s);
-        std::string item;
-        while (std::getline(ss, item, delim)) {
-                elems.push_back(item);
+        // Split according to the delimiter but skip quotes.
+        unsigned last = 0;
+        bool in_quote = false;
+        for (unsigned i = 0; i < s.length(); i ++) {
+                if (s[i] == '\"')
+                        in_quote = !in_quote;
+                if (in_quote)
+                        continue;
+                if (s[i] == delim) {
+                        result.push_back(s.substr(last, i - last));
+                        last = i + 1;
+                } else if (i == s.length() - 1) {
+                        result.push_back(s.substr(last, i - last + 1));
+                }
         }
-}
-
-
-static std::vector<std::string> split(const std::string &s, char delim)
-{
-        std::vector<std::string> elems;
-        csv::split(s, delim, elems);
-        return elems;
 }
 
 static void load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows)
@@ -42,9 +43,10 @@ static void load_rows(const std::string& filename, std::vector<std::vector<std::
         std::string line;
         while (!s.eof()) {
                 std::getline(s, line);
-                rows.push_back(csv::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM));
+                std::vector<std::string> cols;
+                csv::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM, cols);
+                rows.push_back(cols);
         }
-
         s.close();
 }
 
@@ -130,7 +132,7 @@ static std::string purify(const std::string& s)
 {
         std::string r;
         for (unsigned i = 0; i < s.length(); i ++) {
-                r += s.at(i) == ',' ? '，' : s.at(i);
+                r += s.at(i) == ',' ? '*' : s.at(i);
         }
         return r;
 }
@@ -140,15 +142,16 @@ void write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis
         std::ofstream file(filename);
         if (!file.is_open())
                 throw "Failed to write to " + filename;
-        file << "Id, Order ID, Order Category, Order Description, Lab Description, Delta, A1C" << std::endl;
+        file << "Id, Order ID, Order Category, Order Description, Lab Description, Delta, A1C, Triggered" << std::endl;
         for (DeltaAnalysis delta: analysis) {
                 file << delta.patient_id() << ","
                      << delta.oid() << ","
                      << csv::purify(delta.category()) << ","
                      << csv::purify(delta.desc()) << ","
                      << csv::purify(delta.lab_desc()) << ","
-                     << delta.time_offset() << ","
-                     << delta.a1c() << std::endl;
+                     << delta.delta() << ","
+                     << delta.a1c() << ","
+                     << (delta.triggered() ? "1" : "0") << std::endl;
         }
         file.close();
 }

@@ -10,7 +10,7 @@ QMAKE_CXXFLAGS += -std=c++1y
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
-TARGET = A1C_Analyzer
+TARGET = a1c-analyzer
 TEMPLATE = app
 
 

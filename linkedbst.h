@@ -18,6 +18,8 @@ public:
         LinkedList<T>*  find(const T& value);
         void            remove(const T& value);
         void            clear();
+        unsigned        size() const;
+        bool            is_empty() const;
 
 private:
         struct Node
@@ -39,7 +41,8 @@ private:
 
         void    destroy_subtree(Node* node);
 
-        Node*   root = nullptr;
+        Node*           root = nullptr;
+        unsigned        n_elems = 0;
 };
 
 template <class T>
@@ -55,8 +58,22 @@ LinkedBST<T>::~LinkedBST()
 }
 
 template <class T>
+unsigned LinkedBST<T>::size() const
+{
+        return n_elems;
+}
+
+template <class T>
+bool LinkedBST<T>::is_empty() const
+{
+        return root == nullptr;
+}
+
+template <class T>
 void LinkedBST<T>::insert(const T& value)
 {
+        n_elems ++;
+
         Node* current_node = root;
         Node* old_node = nullptr;
         while (current_node != nullptr) {
@@ -122,6 +139,7 @@ void LinkedBST<T>::clear()
 {
         destroy_subtree(root);
         root = nullptr;
+        n_elems = 0;
 }
 
 template <typename K>

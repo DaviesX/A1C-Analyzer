@@ -6,6 +6,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "configdialog.h"
+#include "linkedbst.h"
 #include "analyzer.h"
 #include "labmeasure.h"
 #include "medicationorder.h"
@@ -80,11 +81,16 @@ void MainWindow::on_analyze_triggered()
                 return;
         }
 
-        std::vector<DeltaAnalysis> delta, filtered;
-        analysis::delta(measures, orders, delta);
-        analysis::filter(delta, a1c_margin, filtered);
+        std::vector<DeltaAnalysis> joined, delta;
+        std::set<unsigned> lab_patients;
+        LinkedBST<LabMeasure> cleaned_lab;
+        LinkedBST<MedicationOrder> cleaned_orders;
+        analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
+        analysis::preprocess(orders, cleaned_orders);
+        analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
+        analysis::delta(joined, delta, a1c_margin);
 
-        csv::write_delta_analysis(output_file.toStdString(), filtered);
+        csv::write_delta_analysis(output_file.toStdString(), delta);
 
         QMessageBox::information(this, "Great", "Finished processing delta, saved to " + output_file, QMessageBox::Information);
         ui->status_bar->showMessage("Finished");

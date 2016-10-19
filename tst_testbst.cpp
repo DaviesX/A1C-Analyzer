@@ -53,7 +53,7 @@ void test_bst_speed()
         ::shuffle<unsigned>(nums);
 
         BST<int> bst;
-        int i = 0;
+        unsigned i = 0;
         while (i < n) {
                 bst.insert(nums[i]);
                 i++;
@@ -64,7 +64,7 @@ void test_bst_speed()
 
 
         f_start = std::clock();
-        int j = 0;
+        unsigned j = 0;
         while (j < n) {
                 bst.find(nums[j]);
                 j++;

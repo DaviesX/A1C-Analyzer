@@ -26,7 +26,8 @@ private:
         void            destroy_subtree(typename BST<T>::Node* node);
         void            copy_nodes(std::vector<T>& values, const typename BST<T>::Node* node) const;
 
-        struct Node {
+        struct Node
+        {
                 Node(const T& value):
                         value(value), left(nullptr), right(nullptr)
                 {
@@ -36,6 +37,7 @@ private:
                 Node*           left;
                 Node*           right;
         };
+
         Node*           root = nullptr;
         unsigned        n_nodes = 0;
 };

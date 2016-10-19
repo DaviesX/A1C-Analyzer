@@ -1,15 +1,23 @@
 #ifndef ANALYZER_H
 #define ANALYZER_H
 
+#include <set>
 #include <vector>
+#include "linkedbst.h"
+#include "bst.h"
 #include "medicationorder.h"
 #include "labmeasure.h"
 #include "deltaanalysis.h"
 
 namespace analysis
 {
-void delta(std::vector<LabMeasure>& measures, std::vector<MedicationOrder>& orders, std::vector<DeltaAnalysis>& delta);
+void preprocess(std::vector<LabMeasure>& measures, const std::string& keyword, const float a1c_lvl,
+                std::set<unsigned>& lab_patients, LinkedBST<LabMeasure>& result);
+void preprocess(std::vector<MedicationOrder>& orders, LinkedBST<MedicationOrder>& result);
+void join(LinkedBST<LabMeasure>& measures, std::set<unsigned>& lab_patients,
+          LinkedBST<MedicationOrder>& orders, std::vector<DeltaAnalysis>& join);
 void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vector<DeltaAnalysis>& filtered);
+void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& delta, float a1c_margin);
 }
 
 

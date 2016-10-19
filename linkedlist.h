@@ -14,6 +14,8 @@ class LinkedList
 public:
         LinkedList();
         ~LinkedList();
+
+        bool            is_empty() const;
         T*              front();
         void            push_front(const T& value);
         T*              find(const T& value);
@@ -41,6 +43,12 @@ template <class T>
 LinkedList<T>::~LinkedList()
 {
         clear();
+}
+
+template <class T>
+bool LinkedList<T>::is_empty() const
+{
+        return head == nullptr;
 }
 
 template <class T>
