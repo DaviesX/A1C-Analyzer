@@ -1,9 +1,9 @@
 #include "deltaanalysis.h"
 
 
-DeltaAnalysis::DeltaAnalysis(unsigned oid,
-                             unsigned patient_id,
-                             unsigned time_offset,
+DeltaAnalysis::DeltaAnalysis(int oid,
+                             int patient_id,
+                             int time_offset,
                              const std::string& category,
                              const std::string& desc,
                              const std::string& lab_desc,
@@ -19,7 +19,7 @@ DeltaAnalysis::DeltaAnalysis(unsigned oid,
 }
 
 DeltaAnalysis::DeltaAnalysis(const DeltaAnalysis& raw,
-                             unsigned delta,
+                             int delta,
                              bool triggered)
 {
         m_oid = raw.m_oid;
@@ -30,11 +30,11 @@ DeltaAnalysis::DeltaAnalysis(const DeltaAnalysis& raw,
         m_lab_desc = raw.m_lab_desc;
         m_a1c = raw.m_a1c;
 
-        m_triggered = m_triggered;
-        m_delta = m_delta;
+        m_triggered = triggered;
+        m_delta = delta;
 }
 
-unsigned DeltaAnalysis::delta() const
+int DeltaAnalysis::delta() const
 {
         return m_delta;
 }
@@ -44,17 +44,17 @@ bool DeltaAnalysis::triggered() const
         return m_triggered;
 }
 
-unsigned DeltaAnalysis::oid() const
+int DeltaAnalysis::oid() const
 {
         return m_oid;
 }
 
-unsigned DeltaAnalysis::patient_id() const
+int DeltaAnalysis::patient_id() const
 {
         return m_patient_id;
 }
 
-unsigned DeltaAnalysis::time_offset() const
+int DeltaAnalysis::time_offset() const
 {
         return m_time_offset;
 }

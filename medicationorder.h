@@ -10,27 +10,27 @@ class MedicationOrder: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const MedicationOrder& order);
 public:
-        MedicationOrder(unsigned patiend_id,
+        MedicationOrder(int patiend_id,
                         const std::string& med_desc,
                         const std::string& med_categ,
-                        unsigned date_offset);
-        MedicationOrder(unsigned patiend_id);
+                        int date_offset);
+        MedicationOrder(int patiend_id);
         MedicationOrder(const MedicationOrder& other);
 
-        unsigned                time_offset() const;
-        unsigned                oid() const;
-        unsigned                pid() const;
+        int                time_offset() const;
+        int                oid() const;
+        int                pid() const;
         const std::string&      category() const;
         const std::string&      desc() const;
 
         bool            operator <(const MedicationOrder& rhs) const;
         bool            operator >(const MedicationOrder& rhs) const;
 private:
-        unsigned        m_order_id;
-        unsigned        m_patient_id;
+        int        m_order_id;
+        int        m_patient_id;
         std::string     m_med_categ;
         std::string     m_med_desc;
-        unsigned        m_date_offset;
+        int        m_date_offset;
 };
 
 

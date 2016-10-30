@@ -26,9 +26,9 @@ void test_bst()
 template <typename T>
 static void shuffle(std::vector<T>& objs)
 {
-        const unsigned n = objs.size();
-        for (unsigned i = 1; i < n; i ++) {
-                unsigned r = rand()/(float) RAND_MAX * i;
+        const int n = objs.size();
+        for (int i = 1; i < n; i ++) {
+                int r = rand()/(float) RAND_MAX * i;
                 T tmp = objs[i];
                 objs[i] = objs[r];
                 objs[r] = tmp;
@@ -41,19 +41,19 @@ void test_bst_speed()
         std::clock_t i_end;
         std::clock_t f_start;
         std::clock_t f_end;
-        const unsigned n = 80000;
+        const int n = 80000;
 
         double duration;
         i_start = std::clock();
 
-        std::vector<unsigned> nums;
-        for (unsigned i = 0; i < n; i ++) {
+        std::vector<int> nums;
+        for (int i = 0; i < n; i ++) {
                 nums.push_back(i);
         }
-        ::shuffle<unsigned>(nums);
+        ::shuffle<int>(nums);
 
         BST<int> bst;
-        unsigned i = 0;
+        int i = 0;
         while (i < n) {
                 bst.insert(nums[i]);
                 i++;
@@ -64,7 +64,7 @@ void test_bst_speed()
 
 
         f_start = std::clock();
-        unsigned j = 0;
+        int j = 0;
         while (j < n) {
                 bst.find(nums[j]);
                 j++;

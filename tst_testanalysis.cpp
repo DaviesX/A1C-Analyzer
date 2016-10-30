@@ -19,7 +19,7 @@ void test_delta_analysis()
 
         LinkedBST<LabMeasure> cleaned_lab;
         LinkedBST<MedicationOrder> cleaned_orders;
-        std::set<unsigned> lab_patients;
+        std::set<int> lab_patients;
 
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
         analysis::preprocess(orders, cleaned_orders);

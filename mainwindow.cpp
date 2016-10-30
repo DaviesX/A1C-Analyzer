@@ -35,7 +35,7 @@ void MainWindow::on_lab_triggered()
                                                               ".",
                                                               "CSV File (*.csv)");
         for (QString filename: filenames) {
-                this->lab_files.insert(std::pair<unsigned, std::string>(ui->file_list->count(), filename.toStdString()));
+                this->lab_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Lab: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkGreen);
         }
@@ -48,7 +48,7 @@ void MainWindow::on_order_triggered()
                                                               ".",
                                                               "CSV File (*.csv)");
         for (QString filename: filenames) {
-                this->order_files.insert(std::pair<unsigned, std::string>(ui->file_list->count(), filename.toStdString()));
+                this->order_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Order: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkBlue);
         }
@@ -70,10 +70,10 @@ void MainWindow::on_analyze_triggered()
         std::vector<MedicationOrder> orders;
         std::vector<LabMeasure> measures;
         try {
-                for (std::pair<unsigned, std::string> pair: this->order_files)
+                for (std::pair<int, std::string> pair: this->order_files)
                         csv::load_medication_order(pair.second, orders);
 
-                for (std::pair<unsigned, std::string> pair: this->lab_files)
+                for (std::pair<int, std::string> pair: this->lab_files)
                         csv::load_lab_measure(pair.second, measures);
         } catch (const std::string& ex) {
                 QMessageBox::information(this, "Couldn't load file", QString::fromStdString(ex), QMessageBox::Critical);
@@ -82,7 +82,7 @@ void MainWindow::on_analyze_triggered()
         }
 
         std::vector<DeltaAnalysis> joined, delta;
-        std::set<unsigned> lab_patients;
+        std::set<int> lab_patients;
         LinkedBST<LabMeasure> cleaned_lab;
         LinkedBST<MedicationOrder> cleaned_orders;
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);

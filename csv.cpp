@@ -18,7 +18,7 @@ namespace csv
 static void split(const std::string& s, char delim, std::vector<std::string>& result)
 {
         // Split according to the delimiter but skip quotes.
-        unsigned last = 0;
+        int last = 0;
         bool in_quote = false;
         for (unsigned i = 0; i < s.length(); i ++) {
                 if (s[i] == '\"')

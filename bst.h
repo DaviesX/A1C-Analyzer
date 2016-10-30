@@ -20,7 +20,16 @@ public:
         void            remove(const T& value);
         void            extract(std::vector<T>& values) const;
         void            clear();
-        unsigned        size() const;
+        int        size() const;
+
+        //struct Iterator {
+        //        std::vector<Node*>      stack;
+        //        Node*                   node;
+
+        //        void            init(Node* root);
+        //        void            has_next();
+        //        T&              next();
+        //};
 
 private:
         void            destroy_subtree(typename BST<T>::Node* node);
@@ -39,9 +48,30 @@ private:
         };
 
         Node*           root = nullptr;
-        unsigned        n_nodes = 0;
+        int        n_nodes = 0;
 };
 
+// Iterator
+//template <class T>
+//void BST<T>::Iterator::init(Node* node)
+//{
+//        stack.clear();
+//        this->node = node;
+//        stack.push_back(node);
+//}
+
+//template <class T>
+//void BST<T>::Iterator::has_next()
+//{
+//        return !stack.empty();
+//}
+//
+//template <class T>
+//T& BST<T>::Iterator::next()
+//{
+//}
+
+// Class
 template <class T>
 BST<T>::BST()
 {
@@ -103,7 +133,7 @@ T* BST<T>::find(const T& value)
 }
 
 template <class T>
-unsigned BST<T>::size() const
+int BST<T>::size() const
 {
         return n_nodes;
 }

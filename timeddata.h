@@ -4,7 +4,7 @@
 class TimedData
 {
 public:
-        unsigned time_offset() const
+        int time_offset() const
         {
                 return 0;
         }

@@ -1,12 +1,12 @@
 #include "medicationorder.h"
 
 
-static unsigned uuid = 0;
+static int uuid = 0;
 
-MedicationOrder::MedicationOrder(unsigned patiend_id,
+MedicationOrder::MedicationOrder(int patiend_id,
                                  const std::string& med_categ,
                                  const std::string& med_desc,
-                                 unsigned date_offset)
+                                 int date_offset)
 {
         m_order_id = uuid ++;
         m_patient_id = patiend_id;
@@ -15,7 +15,7 @@ MedicationOrder::MedicationOrder(unsigned patiend_id,
         m_date_offset = date_offset;
 }
 
-MedicationOrder::MedicationOrder(unsigned patiend_id)
+MedicationOrder::MedicationOrder(int patiend_id)
 {
         m_patient_id = patiend_id;
 }
@@ -29,17 +29,17 @@ MedicationOrder::MedicationOrder(const MedicationOrder& other)
         m_date_offset = other.m_date_offset;
 }
 
-unsigned MedicationOrder::time_offset() const
+int MedicationOrder::time_offset() const
 {
         return m_date_offset;
 }
 
-unsigned MedicationOrder::pid() const
+int MedicationOrder::pid() const
 {
         return m_patient_id;
 }
 
-unsigned MedicationOrder::oid() const
+int MedicationOrder::oid() const
 {
         return m_order_id;
 }

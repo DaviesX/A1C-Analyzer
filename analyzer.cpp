@@ -21,9 +21,9 @@ namespace analysis
 template <typename T>
 static void shuffle(std::vector<T>& objs)
 {
-        const unsigned n = objs.size();
-        for (unsigned i = 1; i < n; i ++) {
-                unsigned r = rand()/(float) RAND_MAX * i;
+        const int n = objs.size();
+        for (int i = 1; i < n; i ++) {
+                int r = rand()/(float) RAND_MAX * i;
                 T tmp = objs[i];
                 objs[i] = objs[r];
                 objs[r] = tmp;
@@ -36,7 +36,7 @@ static bool cmp(const T& a, const T& b)
         return a.time_offset() < b.time_offset();
 }
 
-void merge_into_delta(unsigned pid,
+void merge_into_delta(int pid,
                       std::vector<LabMeasure>& a_labs,
                       std::vector<MedicationOrder>& a_orders,
                       std::vector<DeltaAnalysis>& delta)
@@ -46,15 +46,15 @@ void merge_into_delta(unsigned pid,
 
         unsigned j = 0;
         for (unsigned i = 0; i < a_labs.size(); i ++) {
-                unsigned lower = a_labs[i].time_offset();
-                unsigned upper = i != a_labs.size() - 1 ? a_labs[i + 1].time_offset() : 10000;
+                int lower = a_labs[i].time_offset();
+                int upper = (int) i != (int) a_labs.size() - 1 ? a_labs[i + 1].time_offset() : 0XFFFFFFFF;
                 for (; j < a_orders.size(); j ++) {
                         if (a_orders[j].time_offset() < lower)
                                 continue;
                         if (a_orders[j].time_offset() > upper)
                                 break;
                         delta.push_back(DeltaAnalysis(a_orders[j].oid(), pid,
-                                                      a_orders[j].time_offset() - a_labs[i].time_offset(),
+                                                      a_orders[j].time_offset(),
                                                       a_orders[j].category(), a_orders[j].desc(),
                                                       a_labs[i].desc(), a_labs[i].a1c()));
                 }
@@ -65,7 +65,7 @@ std::hash<std::string> str_hash;
 
 struct TotalOrderKey
 {
-        TotalOrderKey(unsigned pid, const std::string& desc, unsigned date):
+        TotalOrderKey(int pid, const std::string& desc, int date):
                 pid(pid), desc_hash(str_hash(desc)), date(date)
         {
         }
@@ -104,14 +104,14 @@ struct TotalOrderKey
                        date > rhs.date;
         }
 
-        unsigned        pid;
-        unsigned        desc_hash;
-        unsigned        date;
+        int        pid;
+        int        desc_hash;
+        int        date;
 };
 
 
 void preprocess(std::vector<LabMeasure>& measures, const std::string& keyword, const float a1c_lvl,
-                std::set<unsigned>& lab_patients, LinkedBST<LabMeasure>& result)
+                std::set<int>& lab_patients, LinkedBST<LabMeasure>& result)
 {
         analysis::shuffle<LabMeasure>(measures);
 
@@ -151,12 +151,12 @@ void preprocess(std::vector<MedicationOrder>& orders,
         }
 }
 
-void join(LinkedBST<LabMeasure>& measures, std::set<unsigned>& lab_patients,
+void join(LinkedBST<LabMeasure>& measures, std::set<int>& lab_patients,
           LinkedBST<MedicationOrder>& orders, std::vector<DeltaAnalysis>& join)
 {
         std::vector<LabMeasure> a_labs;
         std::vector<MedicationOrder> a_orders;
-        for (unsigned pid: lab_patients) {
+        for (int pid: lab_patients) {
                 LinkedList<LabMeasure>* p_measures = measures.find(LabMeasure(pid));
                 LinkedList<MedicationOrder>* p_orders = orders.find(MedicationOrder(pid));
                 if (p_measures == nullptr || p_orders == nullptr)
@@ -181,17 +181,22 @@ void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vect
 
 void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& delta, float a1c_margin)
 {
-        unsigned last_id = -1;
-        unsigned last_date;
-        unsigned offset = 0;
+        bool trigger_status = false;
+        int last_id = -1;
+        int last_date;
+        int offset = 0;
         for (unsigned i = 0; i < raw.size(); i ++) {
-                if (raw[i].patient_id() != last_id) {
+                if (raw[i].a1c() < a1c_margin)
+                        trigger_status = false;
+                if (raw[i].patient_id() != last_id || trigger_status == false) {
                         offset = 0;
                         last_id = raw[i].patient_id();
                         last_date = raw[i].time_offset();
                 }
-                offset += raw[i].time_offset() - last_date;
-                delta.push_back(DeltaAnalysis(raw[i], offset, raw[i].a1c() >= a1c_margin));
+                if (raw[i].a1c() >= a1c_margin)
+                        trigger_status = true;
+                offset = raw[i].time_offset() - last_date;
+                delta.push_back(DeltaAnalysis(raw[i], trigger_status ? offset : 0, raw[i].a1c() >= a1c_margin));
         }
 }
 

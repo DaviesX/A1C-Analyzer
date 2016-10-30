@@ -10,22 +10,22 @@ class LabMeasure: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const LabMeasure& measure);
 public:
-        LabMeasure(unsigned patient_id,
-                   unsigned date_offset,
+        LabMeasure(int patient_id,
+                   int date_offset,
                    const std::string& lab_desc,
                    float a1c);
-        LabMeasure(unsigned patient_id);
+        LabMeasure(int patient_id);
         LabMeasure(const LabMeasure& other);
 
-        unsigned                pid() const;
-        unsigned                time_offset() const;
+        int                pid() const;
+        int                time_offset() const;
         const std::string&      desc() const;
         float                   a1c() const;
         bool            operator <(const LabMeasure& rhs) const;
         bool            operator >(const LabMeasure& rhs) const;
 private:
-        unsigned        m_patient_id;
-        unsigned        m_date_offset;
+        int        m_patient_id;
+        int        m_date_offset;
         std::string     m_lab_desc;
         float           m_a1c;
 };

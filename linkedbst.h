@@ -18,7 +18,7 @@ public:
         LinkedList<T>*  find(const T& value);
         void            remove(const T& value);
         void            clear();
-        unsigned        size() const;
+        int        size() const;
         bool            is_empty() const;
 
 private:
@@ -42,7 +42,7 @@ private:
         void    destroy_subtree(Node* node);
 
         Node*           root = nullptr;
-        unsigned        n_elems = 0;
+        int        n_elems = 0;
 };
 
 template <class T>
@@ -58,7 +58,7 @@ LinkedBST<T>::~LinkedBST()
 }
 
 template <class T>
-unsigned LinkedBST<T>::size() const
+int LinkedBST<T>::size() const
 {
         return n_elems;
 }
