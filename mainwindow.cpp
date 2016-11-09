@@ -86,7 +86,8 @@ void MainWindow::on_analyze_triggered()
         LinkedBST<LabMeasure> cleaned_lab;
         LinkedBST<MedicationOrder> cleaned_orders;
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
-        analysis::preprocess(orders, cleaned_orders);
+        std::vector<DrugFilter> filter;
+        analysis::preprocess(orders, filter, cleaned_orders);
         analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
         analysis::delta(joined, delta, a1c_margin);
 

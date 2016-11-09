@@ -10,37 +10,87 @@ class MedicationOrder: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const MedicationOrder& order);
 public:
-        MedicationOrder(int patiend_id,
-                        const std::string& med_desc,
-                        const std::string& med_categ,
-                        int date_offset);
-        MedicationOrder(int patiend_id);
-        MedicationOrder(const MedicationOrder& other);
+        MedicationOrder(int pid,
+                        bool diabetes,
+                        bool heart_failure,
+                        const std::string& visit_type,
+                        int order_year,
+                        int start_date,
+                        const std::string& order_type,
+                        const std::string& order_status,
+                        const std::string& discontinue_reason,
+                        const std::string& med_category,
+                        const std::string& med_name,
+                        const std::string& order_name,
+                        float dose,
+                        const std::string& uom,
+                        int quantity,
+                        int duration,
+                        int num_refills,
+                        const std::string& route,
+                        const std::string& presc_type,
+                        const std::string& frequency,
+                        bool is_prn,
+                        const std::string& instructions);
+        MedicationOrder(int pid);
 
-        int                time_offset() const;
-        int                oid() const;
-        int                pid() const;
-        const std::string&      category() const;
-        const std::string&      desc() const;
+        int             date() const;
+        int             end_date() const;
 
         bool            operator <(const MedicationOrder& rhs) const;
         bool            operator >(const MedicationOrder& rhs) const;
-private:
-        int        m_order_id;
-        int        m_patient_id;
-        std::string     m_med_categ;
-        std::string     m_med_desc;
-        int        m_date_offset;
+
+        int             oid;
+        int             pid;
+        bool            diabetes;
+        bool            heart_failure;
+        std::string     visit_type;
+        int             order_year;
+        int             start_date;
+        std::string     order_type;
+        std::string     order_status;
+        std::string     discontinue_reason;
+        std::string     med_category;
+        std::string     med_name;
+        std::string     order_name;
+        float           dose;
+        std::string     uom;
+        int             quantity;
+        int             duration;
+        int             num_refills;
+        std::string     route;
+        std::string     presc_type;
+        std::string     frequency;
+        bool            is_prn;
+        std::string     instructions;
 };
 
 
 inline std::ostream& operator <<(std::ostream& os, const MedicationOrder& order)
 {
-        os << "MedicationOrder = [" << order.m_order_id << ","
-           << order.m_patient_id << ","
-           << order.m_med_categ << ","
-           << order.m_med_desc  << ","
-           << order.m_date_offset << "]";
+        os << "MedicationOrder = ["
+           << order.oid << ","
+           << order.pid << ","
+           << order.diabetes << ","
+           << order.heart_failure << ","
+           << order.visit_type << ","
+           << order.order_year << ","
+           << order.start_date << ","
+           << order.order_type << ","
+           << order.order_status << ","
+           << order.discontinue_reason << ","
+           << order.med_category << ","
+           << order.med_name << ","
+           << order.order_name << ","
+           << order.dose << ","
+           << order.uom << ","
+           << order.quantity << ","
+           << order.duration << ","
+           << order.num_refills << ","
+           << order.route << ","
+           << order.frequency << ","
+           << order.is_prn << ","
+           << order.instructions << "]";
         return os;
 }
 

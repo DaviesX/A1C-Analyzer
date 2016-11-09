@@ -3,59 +3,68 @@
 
 #include <string>
 #include <ostream>
+#include "medicationorder.h"
+#include "labmeasure.h"
 
 class DeltaAnalysis
 {
         friend std::ostream& operator << (std::ostream& os, const DeltaAnalysis& delta);
 public:
-        DeltaAnalysis(int oid,
-                      int patient_id,
-                      int time_offset,
-                      const std::string& category,
-                      const std::string& desc,
-                      const std::string& lab_desc,
-                      float a1c);
+        DeltaAnalysis(const MedicationOrder& order, const LabMeasure& lab);
 
-        DeltaAnalysis(const DeltaAnalysis& raw,
-                      int delta,
-                      bool triggered);
+        static void write_head(std::ostream& os)
+        {
+                os << "Id,"
+                   << "Diabetes_Flag,"
+                   << "Heart_Failure_Flag,"
+                   << "Visit Type,"
+                   << "OrderYear,"
+                   << "OrderDate_Days,"
+                   << "OrderType,"
+                   << "OrderStatus,"
+                   << "DiscontinueReason,"
+                   << "TherapeuticCategory,"
+                   << "GenericItemName,"
+                   << "Order Name,"
+                   << "Dose,"
+                   << "UOM,"
+                   << "QuantityAmount,"
+                   << "DurationAmount,"
+                   << "NumRefills,"
+                   << "Route,"
+                   << "PrescriptionType,"
+                   << "Frequency,"
+                   << "IsPRN,"
+                   << "Instructions,"
 
-        int                delta() const;
-        bool                    triggered() const;
+                   << "Lab_Test_Date,"
+                   << "Lab_Observation,"
+                   << "A1C,"
 
-        int                oid() const;
-        int                patient_id() const;
-        int                time_offset() const;
-        const std::string&      category() const;
-        const std::string&      desc() const;
-        const std::string&      lab_desc() const;
-        float                   a1c() const;
-private:
-        int        m_delta         = 0;
-        bool            m_triggered     = false;
-        float           m_a1c;
+                   << "Delta_TR,"
+                   << "Delta_TM,"
+                   << "Triggered,"
+                   << "Recovered,"
+                   << "MedicationChanged";
+        }
 
-        int        m_oid;
-        int        m_patient_id;
-        int        m_time_offset;
+        void write(std::ostream& os) const;
 
-        std::string     m_categ;
-        std::string     m_lab_desc;
-        std::string     m_desc;
+        MedicationOrder order;
+        LabMeasure lab;
+
+        int delta_tr;
+        int delta_tm;
+        bool triggered;
+        bool recovered;
+        bool medication_changed;
 };
 
 inline std::ostream& operator << (std::ostream& os, const DeltaAnalysis& delta)
 {
-        os << "DeltaAnalysis = ["
-           << delta.m_oid << ","
-           << delta.m_patient_id << ","
-           << delta.m_time_offset << ","
-           << delta.m_delta << ","
-           << delta.m_triggered << ","
-           << delta.m_categ << ","
-           << delta.m_desc << ","
-           << delta.m_lab_desc << ","
-           << delta.m_a1c << "]";
+        os << "DeltaAnalysis = [";
+        delta.write(os);
+        os << "]";
         return os;
 }
 

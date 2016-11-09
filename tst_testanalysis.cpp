@@ -4,14 +4,18 @@
 #include "csv.h"
 #include "deltaanalysis.h"
 #include "analyzer.h"
+#include "drugfilter.h"
 #include "tst_testanalysis.h"
 
 
 void test_delta_analysis()
 {
+        std::vector<DrugFilter> filter;
+        csv::load_drug_filter("filter.csv", filter);
+
         std::vector<MedicationOrder> orders;
 
-        csv::load_medication_order("order.csv", orders);
+        //csv::load_medication_order("order.csv", orders);
         csv::load_medication_order("order2.csv", orders);
 
         std::vector<LabMeasure> measures;
@@ -22,7 +26,7 @@ void test_delta_analysis()
         std::set<int> lab_patients;
 
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
-        analysis::preprocess(orders, cleaned_orders);
+        analysis::preprocess(orders, filter, cleaned_orders);
 
         std::vector<DeltaAnalysis> joined, delta;
         analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);

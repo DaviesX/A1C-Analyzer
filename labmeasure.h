@@ -4,39 +4,36 @@
 
 #include <string>
 #include <ostream>
+#include <cmath>
 #include "timeddata.h"
 
 class LabMeasure: public TimedData
 {
         friend std::ostream& operator<<(std::ostream& os, const LabMeasure& measure);
 public:
-        LabMeasure(int patient_id,
-                   int date_offset,
-                   const std::string& lab_desc,
+        LabMeasure(int pid,
+                   int test_date,
+                   const std::string& observation,
                    float a1c);
-        LabMeasure(int patient_id);
-        LabMeasure(const LabMeasure& other);
+        LabMeasure(int pid);
 
-        int                pid() const;
-        int                time_offset() const;
-        const std::string&      desc() const;
-        float                   a1c() const;
         bool            operator <(const LabMeasure& rhs) const;
         bool            operator >(const LabMeasure& rhs) const;
-private:
-        int        m_patient_id;
-        int        m_date_offset;
-        std::string     m_lab_desc;
-        float           m_a1c;
+        int             date() const;
+
+        int             pid = -1;
+        int             test_date = 0;
+        std::string     observation = "";
+        float           a1c = NAN;
 };
 
 inline std::ostream& operator <<(std::ostream& os, const LabMeasure& measure)
 {
         os << "LabMeasure = ["
-           << measure.m_patient_id << ","
-           << measure.m_date_offset << ","
-           << measure.m_lab_desc << ","
-           << measure.m_a1c << "]";
+           << measure.pid << ","
+           << measure.test_date << ","
+           << measure.observation << ","
+           << measure.a1c << "]";
         return os;
 }
 

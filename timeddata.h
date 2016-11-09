@@ -4,7 +4,7 @@
 class TimedData
 {
 public:
-        int time_offset() const
+        int date() const
         {
                 return 0;
         }

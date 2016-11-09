@@ -3,63 +3,75 @@
 
 static int uuid = 0;
 
-MedicationOrder::MedicationOrder(int patiend_id,
-                                 const std::string& med_categ,
-                                 const std::string& med_desc,
-                                 int date_offset)
+MedicationOrder::MedicationOrder(int pid,
+                                 bool diabetes,
+                                 bool heart_failure,
+                                 const std::string& visit_type,
+                                 int order_year,
+                                 int start_date,
+                                 const std::string& order_type,
+                                 const std::string& order_status,
+                                 const std::string& discontinue_reason,
+                                 const std::string& med_category,
+                                 const std::string& med_name,
+                                 const std::string& order_name,
+                                 float dose,
+                                 const std::string& uom,
+                                 int quantity,
+                                 int duration,
+                                 int num_refills,
+                                 const std::string& route,
+                                 const std::string& presc_type,
+                                 const std::string& frequency,
+                                 bool is_prn,
+                                 const std::string& instructions):
+        pid(pid),
+        diabetes(diabetes),
+        heart_failure(heart_failure),
+        visit_type(visit_type),
+        order_year(order_year),
+        start_date(start_date),
+        order_type(order_type),
+        order_status(order_status),
+        discontinue_reason(discontinue_reason),
+        med_category(med_category),
+        med_name(med_name),
+        order_name(order_name),
+        dose(dose),
+        uom(uom),
+        quantity(quantity),
+        duration(duration),
+        num_refills(num_refills),
+        route(route),
+        presc_type(presc_type),
+        frequency(frequency),
+        is_prn(is_prn),
+        instructions(instructions)
 {
-        m_order_id = uuid ++;
-        m_patient_id = patiend_id;
-        m_med_categ = med_categ;
-        m_med_desc = med_desc;
-        m_date_offset = date_offset;
+        oid = uuid ++;
 }
 
-MedicationOrder::MedicationOrder(int patiend_id)
+MedicationOrder::MedicationOrder(int pid):
+        pid(pid)
 {
-        m_patient_id = patiend_id;
 }
 
-MedicationOrder::MedicationOrder(const MedicationOrder& other)
+int MedicationOrder::date() const
 {
-        m_order_id = other.m_order_id;
-        m_patient_id = other.m_patient_id;
-        m_med_categ = other.m_med_categ;
-        m_med_desc = other.m_med_desc;
-        m_date_offset = other.m_date_offset;
+        return start_date;
 }
 
-int MedicationOrder::time_offset() const
+int MedicationOrder::end_date() const
 {
-        return m_date_offset;
-}
-
-int MedicationOrder::pid() const
-{
-        return m_patient_id;
-}
-
-int MedicationOrder::oid() const
-{
-        return m_order_id;
-}
-
-const std::string& MedicationOrder::category() const
-{
-        return m_med_categ;
-}
-
-const std::string& MedicationOrder::desc() const
-{
-        return m_med_desc;
+        return start_date + duration;
 }
 
 bool MedicationOrder:: operator <(const MedicationOrder& rhs) const
 {
-        return m_patient_id < rhs.m_patient_id;
+        return pid < rhs.pid;
 }
 
 bool MedicationOrder:: operator >(const MedicationOrder& rhs) const
 {
-        return m_patient_id > rhs.m_patient_id;
+        return pid > rhs.pid;
 }

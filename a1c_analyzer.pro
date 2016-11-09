@@ -29,7 +29,8 @@ SOURCES += main.cpp\
     analyzer.cpp \
     tst_testanalysis.cpp \
     timeddata.cpp \
-    configdialog.cpp
+    configdialog.cpp \
+    drugfilter.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -45,7 +46,8 @@ HEADERS  += mainwindow.h \
     analyzer.h \
     tst_testanalysis.h \
     timeddata.h \
-    configdialog.h
+    configdialog.h \
+    drugfilter.h
 
 FORMS    += mainwindow.ui \
     configdialog.ui

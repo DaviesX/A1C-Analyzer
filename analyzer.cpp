@@ -33,11 +33,10 @@ static void shuffle(std::vector<T>& objs)
 template <typename T>
 static bool cmp(const T& a, const T& b)
 {
-        return a.time_offset() < b.time_offset();
+        return a.date() < b.date();
 }
 
-void merge_into_delta(int pid,
-                      std::vector<LabMeasure>& a_labs,
+void merge_into_delta(std::vector<LabMeasure>& a_labs,
                       std::vector<MedicationOrder>& a_orders,
                       std::vector<DeltaAnalysis>& delta)
 {
@@ -46,17 +45,14 @@ void merge_into_delta(int pid,
 
         unsigned j = 0;
         for (unsigned i = 0; i < a_labs.size(); i ++) {
-                int lower = a_labs[i].time_offset();
-                int upper = (int) i != (int) a_labs.size() - 1 ? a_labs[i + 1].time_offset() : 0XFFFFFFFF;
+                int lower = a_labs[i].date();
+                int upper = (int) i != (int) a_labs.size() - 1 ? a_labs[i + 1].date() : 0XFFFFFFFF;
                 for (; j < a_orders.size(); j ++) {
-                        if (a_orders[j].time_offset() < lower)
+                        if (a_orders[j].end_date() < lower)
                                 continue;
-                        if (a_orders[j].time_offset() > upper)
+                        if (a_orders[j].date() > upper)
                                 break;
-                        delta.push_back(DeltaAnalysis(a_orders[j].oid(), pid,
-                                                      a_orders[j].time_offset(),
-                                                      a_orders[j].category(), a_orders[j].desc(),
-                                                      a_labs[i].desc(), a_labs[i].a1c()));
+                        delta.push_back(DeltaAnalysis(a_orders[j], LabMeasure(a_labs[i])));
                 }
         }
 }
@@ -71,17 +67,12 @@ struct TotalOrderKey
         }
 
         TotalOrderKey(const MedicationOrder& order):
-                pid(order.pid()), desc_hash(str_hash(order.category())), date(order.time_offset())
+                pid(order.pid), desc_hash(str_hash(order.med_category)), date(order.date())
         {
         }
 
         TotalOrderKey(const LabMeasure& lab):
-                pid(lab.pid()), desc_hash(str_hash(lab.desc())), date(lab.time_offset())
-        {
-        }
-
-        TotalOrderKey(const DeltaAnalysis& delta):
-                pid(delta.patient_id()), desc_hash(str_hash(delta.desc())), date(delta.time_offset())
+                pid(lab.pid), desc_hash(str_hash(lab.observation)), date(lab.date())
         {
         }
 
@@ -118,12 +109,12 @@ void preprocess(std::vector<LabMeasure>& measures, const std::string& keyword, c
         BST<analysis::TotalOrderKey> existing_objs;
         std::locale loc;
         for (LabMeasure measure: measures) {
-                if (measure.a1c() < a1c_lvl)
+                if (measure.a1c < a1c_lvl)
                         continue;
 
                 std::string upper("");
-                for (unsigned i = 0; i < measure.desc().length(); i ++)
-                        upper += std::toupper(measure.desc().at(i), loc);
+                for (unsigned i = 0; i < measure.observation.length(); i ++)
+                        upper += std::toupper(measure.observation.at(i), loc);
                 if (upper.find(keyword) == std::string::npos)
                         continue;
 
@@ -131,18 +122,26 @@ void preprocess(std::vector<LabMeasure>& measures, const std::string& keyword, c
                 if (!existing_objs.find(key)) {
                         existing_objs.insert(key);
                         result.insert(measure);
-                        lab_patients.insert(measure.pid());
+                        lab_patients.insert(measure.pid);
                 }
         }
 }
 
 void preprocess(std::vector<MedicationOrder>& orders,
+                std::vector<DrugFilter>& filter,
                 LinkedBST<MedicationOrder>& result)
 {
         analysis::shuffle<MedicationOrder>(orders);
 
+        std::set<std::string> filtered_med;
+        // for (DrugFilter drug: filter)
+        //         if (drug.is_filtered)
+        //                 filtered_med.insert(drug.category);
+
         BST<analysis::TotalOrderKey> existing_objs;
         for (MedicationOrder order: orders) {
+                if (filtered_med.find(order.med_category) != filtered_med.end())
+                        continue;
                 analysis::TotalOrderKey key(order);
                 if (!existing_objs.find(key)) {
                         existing_objs.insert(key);
@@ -167,36 +166,62 @@ void join(LinkedBST<LabMeasure>& measures, std::set<int>& lab_patients,
                 p_measures->extract(a_labs);
                 p_orders->extract(a_orders);
 
-                analysis::merge_into_delta(pid, a_labs, a_orders, join);
+                analysis::merge_into_delta(a_labs, a_orders, join);
         }
 }
 
 void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vector<DeltaAnalysis>& filtered)
 {
         for (DeltaAnalysis d: delta) {
-                if (d.a1c() >= a1c_margin)
+                if (d.lab.a1c >= a1c_margin)
                         filtered.push_back(d);
         }
 }
 
+unsigned patient_range(const std::vector<DeltaAnalysis>& deltas, int i)
+{
+        int curr_id = deltas[i].order.pid;
+        for (unsigned j = i; j < deltas.size(); j ++) {
+                if (deltas[j].order.pid != curr_id)
+                        return j;
+        }
+        return deltas.size();
+}
+
 void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& delta, float a1c_margin)
 {
-        bool trigger_status = false;
-        int last_id = -1;
-        int last_date;
-        int offset = 0;
         for (unsigned i = 0; i < raw.size(); i ++) {
-                if (raw[i].a1c() < a1c_margin)
-                        trigger_status = false;
-                if (raw[i].patient_id() != last_id || trigger_status == false) {
-                        offset = 0;
-                        last_id = raw[i].patient_id();
-                        last_date = raw[i].time_offset();
+                unsigned end = analysis::patient_range(raw, i);
+
+                bool ts = false;
+                bool tr = false;
+
+                int triggered_date = -1;
+                int recovery_date = -1;
+
+                for (; i < end; i ++) {
+                        if (raw[i].lab.a1c < a1c_margin) {
+                                if (ts) {
+                                        recovery_date = raw[i].lab.test_date;
+                                        tr = true;
+                                        ts = false;
+                                }
+                        } else {
+                                triggered_date = raw[i].lab.test_date;
+                                ts = true;
+                                tr = false;
+                        }
+
+                        DeltaAnalysis da = raw[i];
+                        da.triggered = ts;
+                        da.recovered = tr;
+                        if (tr)
+                                da.delta_tr = recovery_date - triggered_date;
+                        else
+                                da.delta_tr = -1;
+
+                        delta.push_back(da);
                 }
-                if (raw[i].a1c() >= a1c_margin)
-                        trigger_status = true;
-                offset = raw[i].time_offset() - last_date;
-                delta.push_back(DeltaAnalysis(raw[i], trigger_status ? offset : 0, raw[i].a1c() >= a1c_margin));
         }
 }
 
