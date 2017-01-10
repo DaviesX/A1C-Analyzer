@@ -30,7 +30,9 @@ SOURCES += main.cpp\
     tst_testanalysis.cpp \
     timeddata.cpp \
     configdialog.cpp \
-    drugfilter.cpp
+    drugfilter.cpp \
+    database.cpp \
+    querydialog.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -47,9 +49,12 @@ HEADERS  += mainwindow.h \
     tst_testanalysis.h \
     timeddata.h \
     configdialog.h \
-    drugfilter.h
+    drugfilter.h \
+    database.h \
+    querydialog.h
 
 FORMS    += mainwindow.ui \
-    configdialog.ui
+    configdialog.ui \
+    querydialog.ui
 
 DISTFILES +=

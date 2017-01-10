@@ -3,14 +3,14 @@
 #include <QFileDialog>
 #include <QMessageBox>
 #include <QFile>
+
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "configdialog.h"
+#include "querydialog.h"
+
 #include "linkedbst.h"
 #include "analyzer.h"
-#include "labmeasure.h"
-#include "medicationorder.h"
-#include "deltaanalysis.h"
 #include "csv.h"
 
 
@@ -20,6 +20,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
         ui->setupUi(this);
 
+        config_dialog = new ConfigDialog(this);
+        query_dialog = new QueryDialog(this);
         ui->status_bar->showMessage("A1C Analyzer Started");
 }
 
@@ -38,6 +40,8 @@ void MainWindow::on_lab_triggered()
                 this->lab_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Lab: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkGreen);
+
+                needs_analysis = true;
         }
 }
 
@@ -51,6 +55,8 @@ void MainWindow::on_order_triggered()
                 this->order_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Order: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkBlue);
+
+                needs_analysis = true;
         }
 }
 
@@ -64,53 +70,64 @@ void MainWindow::on_filter_triggered()
                 this->order_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Filter: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkGray);
+
+                needs_analysis = true;
         }
 }
 
 void MainWindow::on_analyze_triggered()
 {
-        ConfigDialog dialog(this);
-        dialog.exec();
+        config_dialog->exec();
 
-        if (dialog.is_canceled())
+        if (config_dialog->is_canceled())
                 return ;
 
-        QString output_file = dialog.get_output_file();
-        float a1c_margin = dialog.get_a1c_margin();
+        QString output_file = config_dialog->get_output_file();
+        float a1c_margin = config_dialog->get_a1c_margin();
 
         ui->status_bar->showMessage("Analyzing... just a moment");
 
-        std::vector<MedicationOrder> orders;
-        std::vector<LabMeasure> measures;
-        std::vector<DrugFilter> filter;
+        db.reset();
+
         try {
                 for (std::pair<int, std::string> pair: this->order_files)
-                        csv::load_medication_order(pair.second, orders);
+                        csv::load_medication_order(pair.second, db.orders);
 
                 for (std::pair<int, std::string> pair: this->lab_files)
-                        csv::load_lab_measure(pair.second, measures);
+                        csv::load_lab_measure(pair.second, db.measures);
 
                 for (std::pair<int, std::string> pair: this->filter_files)
-                        csv::load_drug_filter(pair.second, filter);
+                        csv::load_drug_filter(pair.second, db.filter);
         } catch (const std::string& ex) {
                 QMessageBox::information(this, "Couldn't load file", QString::fromStdString(ex), QMessageBox::Critical);
                 ui->status_bar->showMessage("Failed to load dataset");
                 return;
         }
 
-        std::vector<DeltaAnalysis> joined, delta;
-        std::set<int> lab_patients;
         LinkedBST<LabMeasure> cleaned_lab;
         LinkedBST<MedicationOrder> cleaned_orders;
-        analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
-        analysis::preprocess(orders, filter, cleaned_orders);
-        analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
-        analysis::delta(joined, delta, a1c_margin);
+        analysis::preprocess(db.measures, "A1C", 0.0f, db.lab_patients, cleaned_lab);
+        analysis::preprocess(db.orders, db.filter, cleaned_orders);
+        analysis::join(cleaned_lab, db.lab_patients, cleaned_orders, db.joined);
+        analysis::delta(db.joined, db.delta, a1c_margin);
 
-        csv::write_delta_analysis(output_file.toStdString(), delta);
-
-        QMessageBox::information(this, "Great", "Finished processing delta, saved to " + output_file, QMessageBox::Information);
+        if (config_dialog->needs_output()) {
+                csv::write_delta_analysis(output_file.toStdString(), db.delta);
+                QMessageBox::information(this, "Great", "Finished processing the data, saved to " + output_file, QMessageBox::Information);
+        } else {
+                QMessageBox::information(this, "Great", "Finished processing the data", QMessageBox::Information);
+        }
         ui->status_bar->showMessage("Finished");
+
+        needs_analysis = false;
+}
+
+void MainWindow::on_query_triggered()
+{
+        if(needs_analysis)
+                on_analyze_triggered();
+
+        query_dialog->exec();
 }
 
 void MainWindow::on_clear_all_files_triggered()
@@ -119,6 +136,8 @@ void MainWindow::on_clear_all_files_triggered()
         this->order_files.clear();
         this->filter_files.clear();
         ui->file_list->clear();
+
+       needs_analysis = true;
 }
 
 void MainWindow::keyPressEvent(QKeyEvent* event)
@@ -144,6 +163,7 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
 
                         ui->file_list->takeItem(row);
                 }
+                needs_analysis = true;
                 break;
         }
 }

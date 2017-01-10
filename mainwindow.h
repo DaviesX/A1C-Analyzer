@@ -10,6 +10,9 @@
 #include <map>
 #include <utility>
 
+#include "configdialog.h"
+#include "querydialog.h"
+#include "database.h"
 
 namespace Ui {
 class MainWindow;
@@ -36,10 +39,19 @@ private slots:
 
         void on_filter_triggered();
 
+        void on_query_triggered();
+
 private:
+        ConfigDialog*                   config_dialog;
+        QueryDialog*                    query_dialog;
+
         std::map<int, std::string>      lab_files;
         std::map<int, std::string>      order_files;
         std::map<int, std::string>      filter_files;
+
+        Database                        db;
+
+        bool                            needs_analysis = true;
 
         Ui::MainWindow *ui;
 };

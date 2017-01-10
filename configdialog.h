@@ -19,6 +19,7 @@ public:
         QString         get_output_file() const;
         float           get_a1c_margin() const;
         bool            is_canceled() const;
+        bool            needs_output() const;
 private slots:
 
         void on_buttonBox_accepted();
@@ -31,6 +32,7 @@ private:
         QString                 m_output_file = "";
         float                   m_a1c_margin = INFINITY;
         bool                    m_is_canceled = true;
+        bool                    m_needs_output = false;
 
         Ui::ConfigDialog*       ui;
 };

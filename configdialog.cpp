@@ -19,12 +19,18 @@ ConfigDialog::~ConfigDialog()
 void ConfigDialog::on_buttonBox_accepted()
 {
         m_a1c_margin = ui->a1c_margin->value();
+        m_needs_output = ui->is_output->isChecked();
         m_is_canceled = false;
 }
 
 bool ConfigDialog::is_canceled() const
 {
         return m_is_canceled;
+}
+
+bool ConfigDialog::needs_output() const
+{
+        return m_needs_output;
 }
 
 QString ConfigDialog::get_output_file() const

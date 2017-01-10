@@ -53,6 +53,7 @@
      <string>Analyze</string>
     </property>
     <addaction name="analyze"/>
+    <addaction name="query"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuData"/>
@@ -70,7 +71,7 @@
   </action>
   <action name="analyze">
    <property name="text">
-    <string>Extract Delta</string>
+    <string>Confirm data</string>
    </property>
   </action>
   <action name="clear_all_files">
@@ -81,6 +82,11 @@
   <action name="filter">
    <property name="text">
     <string>Load filter</string>
+   </property>
+  </action>
+  <action name="query">
+   <property name="text">
+    <string>Query</string>
    </property>
   </action>
  </widget>
