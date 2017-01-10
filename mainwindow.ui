@@ -36,7 +36,7 @@
      <x>0</x>
      <y>0</y>
      <width>500</width>
-     <height>19</height>
+     <height>29</height>
     </rect>
    </property>
    <widget class="QMenu" name="menuFile">
@@ -45,6 +45,7 @@
     </property>
     <addaction name="lab"/>
     <addaction name="order"/>
+    <addaction name="filter"/>
     <addaction name="clear_all_files"/>
    </widget>
    <widget class="QMenu" name="menuData">
@@ -75,6 +76,11 @@
   <action name="clear_all_files">
    <property name="text">
     <string>Clear All</string>
+   </property>
+  </action>
+  <action name="filter">
+   <property name="text">
+    <string>Load filter</string>
    </property>
   </action>
  </widget>

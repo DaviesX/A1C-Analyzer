@@ -34,9 +34,12 @@ private slots:
 
         void on_clear_all_files_triggered();
 
+        void on_filter_triggered();
+
 private:
-        std::map<int, std::string>         lab_files;
-        std::map<int, std::string>         order_files;
+        std::map<int, std::string>      lab_files;
+        std::map<int, std::string>      order_files;
+        std::map<int, std::string>      filter_files;
 
         Ui::MainWindow *ui;
 };

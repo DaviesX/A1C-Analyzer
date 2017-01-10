@@ -54,6 +54,19 @@ void MainWindow::on_order_triggered()
         }
 }
 
+void MainWindow::on_filter_triggered()
+{
+        QStringList filenames = QFileDialog::getOpenFileNames(this,
+                                                              tr("Medication Filter File"),
+                                                              ".",
+                                                              "CSV File (*.csv)");
+        for (QString filename: filenames) {
+                this->order_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
+                ui->file_list->addItem("Filter: " + filename);
+                ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkGray);
+        }
+}
+
 void MainWindow::on_analyze_triggered()
 {
         ConfigDialog dialog(this);
@@ -69,12 +82,16 @@ void MainWindow::on_analyze_triggered()
 
         std::vector<MedicationOrder> orders;
         std::vector<LabMeasure> measures;
+        std::vector<DrugFilter> filter;
         try {
                 for (std::pair<int, std::string> pair: this->order_files)
                         csv::load_medication_order(pair.second, orders);
 
                 for (std::pair<int, std::string> pair: this->lab_files)
                         csv::load_lab_measure(pair.second, measures);
+
+                for (std::pair<int, std::string> pair: this->filter_files)
+                        csv::load_drug_filter(pair.second, filter);
         } catch (const std::string& ex) {
                 QMessageBox::information(this, "Couldn't load file", QString::fromStdString(ex), QMessageBox::Critical);
                 ui->status_bar->showMessage("Failed to load dataset");
@@ -86,7 +103,6 @@ void MainWindow::on_analyze_triggered()
         LinkedBST<LabMeasure> cleaned_lab;
         LinkedBST<MedicationOrder> cleaned_orders;
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
-        std::vector<DrugFilter> filter;
         analysis::preprocess(orders, filter, cleaned_orders);
         analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
         analysis::delta(joined, delta, a1c_margin);
@@ -101,6 +117,7 @@ void MainWindow::on_clear_all_files_triggered()
 {
         this->lab_files.clear();
         this->order_files.clear();
+        this->filter_files.clear();
         ui->file_list->clear();
 }
 
@@ -120,6 +137,10 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
                         auto it2 = order_files.find(row);
                         if (it2 != order_files.end())
                                 order_files.erase(it2);
+
+                        auto it3 = filter_files.find(row);
+                        if (it3 != filter_files.end())
+                                filter_files.erase(it2);
 
                         ui->file_list->takeItem(row);
                 }
