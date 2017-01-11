@@ -21,12 +21,14 @@ MainWindow::MainWindow(QWidget *parent) :
         ui->setupUi(this);
 
         config_dialog = new ConfigDialog(this);
-        query_dialog = new QueryDialog(this);
+        query_dialog = new QueryDialog(this, db);
         ui->status_bar->showMessage("A1C Analyzer Started");
 }
 
 MainWindow::~MainWindow()
 {
+        delete config_dialog;
+        delete query_dialog;
         delete ui;
 }
 
@@ -67,7 +69,7 @@ void MainWindow::on_filter_triggered()
                                                               ".",
                                                               "CSV File (*.csv)");
         for (QString filename: filenames) {
-                this->order_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
+                this->filter_files.insert(std::pair<int, std::string>(ui->file_list->count(), filename.toStdString()));
                 ui->file_list->addItem("Filter: " + filename);
                 ui->file_list->item(ui->file_list->count()-1)->setForeground(Qt::darkGray);
 

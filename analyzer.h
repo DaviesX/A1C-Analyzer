@@ -19,6 +19,7 @@ void join(LinkedBST<LabMeasure>& measures, std::set<int>& lab_patients,
           LinkedBST<MedicationOrder>& orders, std::vector<Delta>& join);
 void filter(const std::vector<Delta>& extract_delta, float a1c_margin, std::vector<Delta>& filtered);
 void extract_delta(const std::vector<Delta>& raw, std::vector<Delta>& extract_delta, float a1c_margin);
+void extract_medication_set(const std::vector<Delta>& raw, int pid, int before_date, std::vector<MedicationOrder>& order);
 }
 
 

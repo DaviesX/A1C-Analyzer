@@ -264,4 +264,32 @@ void extract_delta(const std::vector<Delta>& raw, std::vector<Delta>& delta, flo
         }
 }
 
+void extract_medication_set(const std::vector<Delta>& raw, int pid, int before_date, std::vector<MedicationOrder>& orders)
+{
+        std::set<Delta, order_compare> curr_meds;
+
+        for (unsigned i = 0; i < raw.size(); i ++) {
+                Delta da = raw[i];
+                if (da.lab.pid != pid)
+                        continue;
+
+                unsigned end = analysis::patient_range(raw, i);
+
+                for (; i < end; i ++) {
+                        da = raw[i];
+                        int expiration = da.order.date() + (1 + da.order.num_refills)*da.order.duration;
+                        if (da.order.date() < before_date && expiration >= before_date)
+                                curr_meds.insert(da);
+                }
+        }
+
+        for (Delta curr_med: curr_meds) {
+                orders.push_back(curr_med.order);
+        }
+
+        std::sort(orders.begin(), orders.end(), [](const MedicationOrder& a, const MedicationOrder& b) {
+                return a.date() < b.date();
+        });
+}
+
 }
