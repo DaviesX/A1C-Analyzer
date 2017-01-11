@@ -6,7 +6,7 @@
 
 QT       += core gui
 
-QMAKE_CXXFLAGS += -std=c++1y
+QMAKE_CXXFLAGS += -std=c++14
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -25,14 +25,14 @@ SOURCES += main.cpp\
     csv.cpp \
     linkedbst.cpp \
     tst_testcsv.cpp \
-    deltaanalysis.cpp \
     analyzer.cpp \
     tst_testanalysis.cpp \
     timeddata.cpp \
     configdialog.cpp \
     drugfilter.cpp \
     database.cpp \
-    querydialog.cpp
+    querydialog.cpp \
+    delta.cpp
 
 HEADERS  += mainwindow.h \
     linkedlist.h \
@@ -44,14 +44,14 @@ HEADERS  += mainwindow.h \
     csv.h \
     linkedbst.h \
     tst_testcsv.h \
-    deltaanalysis.h \
     analyzer.h \
     tst_testanalysis.h \
     timeddata.h \
     configdialog.h \
     drugfilter.h \
     database.h \
-    querydialog.h
+    querydialog.h \
+    delta.h
 
 FORMS    += mainwindow.ui \
     configdialog.ui \

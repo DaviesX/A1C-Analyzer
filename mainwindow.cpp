@@ -109,7 +109,7 @@ void MainWindow::on_analyze_triggered()
         analysis::preprocess(db.measures, "A1C", 0.0f, db.lab_patients, cleaned_lab);
         analysis::preprocess(db.orders, db.filter, cleaned_orders);
         analysis::join(cleaned_lab, db.lab_patients, cleaned_orders, db.joined);
-        analysis::delta(db.joined, db.delta, a1c_margin);
+        analysis::extract_delta(db.joined, db.delta, a1c_margin);
 
         if (config_dialog->needs_output()) {
                 csv::write_delta_analysis(output_file.toStdString(), db.delta);

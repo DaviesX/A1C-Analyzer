@@ -6,11 +6,11 @@
 #include "medicationorder.h"
 #include "labmeasure.h"
 
-class DeltaAnalysis
+class Delta
 {
-        friend std::ostream& operator << (std::ostream& os, const DeltaAnalysis& delta);
+        friend std::ostream& operator << (std::ostream& os, const Delta& delta);
 public:
-        DeltaAnalysis(const MedicationOrder& order, const LabMeasure& lab);
+        Delta(const MedicationOrder& order, const LabMeasure& lab);
 
         static void write_head(std::ostream& os)
         {
@@ -60,7 +60,7 @@ public:
         bool medication_changed;
 };
 
-inline std::ostream& operator << (std::ostream& os, const DeltaAnalysis& delta)
+inline std::ostream& operator << (std::ostream& os, const Delta& delta)
 {
         os << "DeltaAnalysis = [";
         delta.write(os);

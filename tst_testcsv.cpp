@@ -2,7 +2,7 @@
 #include <vector>
 #include "labmeasure.h"
 #include "medicationorder.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 #include "csv.h"
 #include "tst_testcsv.h"
 

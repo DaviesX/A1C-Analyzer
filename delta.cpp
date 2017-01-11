@@ -1,9 +1,9 @@
 #include "medicationorder.h"
 #include "labmeasure.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 
 
-DeltaAnalysis::DeltaAnalysis(const MedicationOrder& order,
+Delta::Delta(const MedicationOrder& order,
                              const LabMeasure& lab):
         order(order),
         lab(lab),
@@ -14,7 +14,7 @@ DeltaAnalysis::DeltaAnalysis(const MedicationOrder& order,
 {
 }
 
-void DeltaAnalysis::write(std::ostream& os) const
+void Delta::write(std::ostream& os) const
 {
         os << order.pid << ","
            << order.diabetes << ","

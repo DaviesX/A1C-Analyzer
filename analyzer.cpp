@@ -5,12 +5,13 @@
 #include <set>
 #include <algorithm>
 #include <string>
+#include <sstream>
 #include <functional>
 #include "linkedbst.h"
 #include "bst.h"
 #include "labmeasure.h"
 #include "medicationorder.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 #include "analyzer.h"
 #include "timeddata.h"
 
@@ -38,7 +39,7 @@ static bool cmp(const T& a, const T& b)
 
 void merge_into_delta(std::vector<LabMeasure>& a_labs,
                       std::vector<MedicationOrder>& a_orders,
-                      std::vector<DeltaAnalysis>& delta)
+                      std::vector<Delta>& delta)
 {
         std::sort(a_labs.begin(), a_labs.end(), analysis::cmp<LabMeasure>);
         std::sort(a_orders.begin(), a_orders.end(), analysis::cmp<MedicationOrder>);
@@ -52,7 +53,7 @@ void merge_into_delta(std::vector<LabMeasure>& a_labs,
                                 continue;
                         if (a_orders[j].date() > upper)
                                 break;
-                        delta.push_back(DeltaAnalysis(a_orders[j], LabMeasure(a_labs[i])));
+                        delta.push_back(Delta(a_orders[j], LabMeasure(a_labs[i])));
                 }
         }
 }
@@ -134,9 +135,9 @@ void preprocess(std::vector<MedicationOrder>& orders,
         analysis::shuffle<MedicationOrder>(orders);
 
         std::set<std::string> filtered_med;
-        // for (DrugFilter drug: filter)
-        //         if (drug.is_filtered)
-        //                 filtered_med.insert(drug.category);
+        for (DrugFilter drug: filter)
+                if (drug.is_filtered)
+                        filtered_med.insert(drug.category);
 
         BST<analysis::TotalOrderKey> existing_objs;
         for (MedicationOrder order: orders) {
@@ -151,7 +152,7 @@ void preprocess(std::vector<MedicationOrder>& orders,
 }
 
 void join(LinkedBST<LabMeasure>& measures, std::set<int>& lab_patients,
-          LinkedBST<MedicationOrder>& orders, std::vector<DeltaAnalysis>& join)
+          LinkedBST<MedicationOrder>& orders, std::vector<Delta>& join)
 {
         std::vector<LabMeasure> a_labs;
         std::vector<MedicationOrder> a_orders;
@@ -170,15 +171,15 @@ void join(LinkedBST<LabMeasure>& measures, std::set<int>& lab_patients,
         }
 }
 
-void filter(const std::vector<DeltaAnalysis>& delta, float a1c_margin, std::vector<DeltaAnalysis>& filtered)
+void filter(const std::vector<Delta>& delta, float a1c_margin, std::vector<Delta>& filtered)
 {
-        for (DeltaAnalysis d: delta) {
+        for (Delta d: delta) {
                 if (d.lab.a1c >= a1c_margin)
                         filtered.push_back(d);
         }
 }
 
-unsigned patient_range(const std::vector<DeltaAnalysis>& deltas, int i)
+unsigned patient_range(const std::vector<Delta>& deltas, int i)
 {
         int curr_id = deltas[i].order.pid;
         for (unsigned j = i; j < deltas.size(); j ++) {
@@ -188,8 +189,20 @@ unsigned patient_range(const std::vector<DeltaAnalysis>& deltas, int i)
         return deltas.size();
 }
 
-void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& delta, float a1c_margin)
+struct order_compare {
+        bool operator() (const Delta& lhs, const Delta& rhs) const
+        {
+                std::stringstream s1,s2;
+                s1 << lhs.order.order_name << lhs.order.dose;
+                s2 << rhs.order.order_name << rhs.order.dose;
+                return s1.str() < s2.str();
+        }
+};
+
+void extract_delta(const std::vector<Delta>& raw, std::vector<Delta>& delta, float a1c_margin)
 {
+        std::set<Delta, order_compare> curr_meds;
+
         for (unsigned i = 0; i < raw.size(); i ++) {
                 unsigned end = analysis::patient_range(raw, i);
 
@@ -199,26 +212,52 @@ void delta(const std::vector<DeltaAnalysis>& raw, std::vector<DeltaAnalysis>& de
                 int triggered_date = -1;
                 int recovery_date = -1;
 
+                curr_meds.clear();
+
                 for (; i < end; i ++) {
-                        if (raw[i].lab.a1c < a1c_margin) {
+                        Delta da = raw[i];
+
+                        // Detect a1c trigger.
+                        if (da.lab.a1c < a1c_margin) {
                                 if (ts) {
-                                        recovery_date = raw[i].lab.test_date;
+                                        recovery_date = da.lab.test_date;
                                         tr = true;
                                         ts = false;
                                 }
                         } else {
-                                triggered_date = raw[i].lab.test_date;
+                                triggered_date = da.lab.test_date;
                                 ts = true;
                                 tr = false;
                         }
 
-                        DeltaAnalysis da = raw[i];
+                        // Remove expired medications.
+                        int curr_date = da.lab.test_date;
+                        const MedicationOrder& new_med = da.order;
+                        for (std::set<Delta>::iterator it = curr_meds.begin(); it != curr_meds.end(); ) {
+                                const Delta& curr_med = *it;
+                                const MedicationOrder& order = curr_med.order;
+                                int expiration = order.date() + (1 + order.num_refills)*order.duration;
+                                if (curr_date > expiration &&
+                                    !(order.med_name == new_med.med_name && order.dose == new_med.dose))
+                                        it = curr_meds.erase(it);
+                                else
+                                        ++ it;
+                        }
+
+                        // Update trigger information.
                         da.triggered = ts;
                         da.recovered = tr;
                         if (tr)
                                 da.delta_tr = recovery_date - triggered_date;
                         else
                                 da.delta_tr = -1;
+
+                        // Detect medication change.
+                        std::set<Delta>::iterator old = curr_meds.find(da);
+                        da.medication_changed = old == curr_meds.end();
+
+                        if (old == curr_meds.end())
+                                curr_meds.insert(da);
 
                         delta.push_back(da);
                 }

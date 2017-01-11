@@ -8,7 +8,7 @@
 #include "labmeasure.h"
 #include "medicationorder.h"
 #include "drugfilter.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 
 
 class Database
@@ -23,8 +23,8 @@ public:
         std::vector<DrugFilter>         filter;
 
         std::set<int>                   lab_patients;
-        std::vector<DeltaAnalysis>      joined;
-        std::vector<DeltaAnalysis>      delta;
+        std::vector<Delta>      joined;
+        std::vector<Delta>      delta;
 };
 
 #endif // DATABASE_H

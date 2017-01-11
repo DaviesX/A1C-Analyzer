@@ -8,7 +8,7 @@
 #include <sstream>
 #include "medicationorder.h"
 #include "labmeasure.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 #include "csv.h"
 
 
@@ -226,15 +226,15 @@ static std::string purify(const std::string& s)
         return r;
 }
 
-void write_delta_analysis(const std::string& filename, std::vector<DeltaAnalysis>& analysis)
+void write_delta_analysis(const std::string& filename, std::vector<Delta>& analysis)
 {
         std::ofstream file(filename);
         if (!file.is_open())
                 throw std::string("Failed to write to " + filename);
 
-        DeltaAnalysis::write_head(file);
+        Delta::write_head(file);
         file << std::endl;
-        for (DeltaAnalysis delta: analysis) {
+        for (Delta delta: analysis) {
                 delta.write(file);
                 file << std::endl;
         }

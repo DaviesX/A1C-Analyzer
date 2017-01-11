@@ -2,7 +2,7 @@
 #include <string>
 #include <set>
 #include "csv.h"
-#include "deltaanalysis.h"
+#include "delta.h"
 #include "analyzer.h"
 #include "drugfilter.h"
 #include "tst_testanalysis.h"
@@ -28,9 +28,9 @@ void test_delta_analysis()
         analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
         analysis::preprocess(orders, filter, cleaned_orders);
 
-        std::vector<DeltaAnalysis> joined, delta;
+        std::vector<Delta> joined, delta;
         analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
-        analysis::delta(joined, delta, 8.0f);
+        analysis::extract_delta(joined, delta, 8.0f);
 
         //for (auto d: delta)
         //        std::cout << d << std::endl;
