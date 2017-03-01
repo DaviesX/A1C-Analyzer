@@ -2,9 +2,10 @@
 #include "querydialog.h"
 #include "ui_querydialog.h"
 #include "database.h"
-#include "analyzer.h"
+#include "dataset.h"
 
-QueryDialog::QueryDialog(QWidget *parent, Database& db) :
+
+QueryDialog::QueryDialog(QWidget *parent, dataset::Database& db) :
         QDialog(parent),
         ui(new Ui::QueryDialog),
         db(db)
@@ -21,18 +22,22 @@ void QueryDialog::on_day_offset_editingFinished()
 {
         // Query.
         int pid = ui->patient_id->value();
-        int before_date = ui->day_offset->value();
-        std::vector<MedicationOrder> orders;
-        analysis::extract_medication_set(db.delta, pid, before_date, orders);
+        unsigned before_date = static_cast<unsigned>(ui->day_offset->value());
 
-        // Write query result to list.
-        ui->med_orde_list->clear();
-        for (MedicationOrder order: orders) {
-                /*std::stringstream ss;
-                ss << order;*/
+        dataset::patient_records_t::iterator record_iter = db.records.find(pid);
+        if (record_iter != db.records.end()) {
+                std::vector<csv::MedicationOrder> orders;
+                record_iter->second.get_analysis(before_date, orders);
 
-                QString s(order.order_name.c_str());
-                //s.fromStdString(ss.str());
-                ui->med_orde_list->addItem(s);
+                // Write query result to list.
+                ui->med_orde_list->clear();
+                for (csv::MedicationOrder order: orders) {
+                        /*std::stringstream ss;
+                          ss << order;*/
+
+                        QString s(order.order_name.c_str());
+                        //s.fromStdString(ss.str());
+                        ui->med_orde_list->addItem(s);
+                }
         }
 }

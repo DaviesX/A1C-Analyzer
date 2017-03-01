@@ -9,8 +9,7 @@
 #include "configdialog.h"
 #include "querydialog.h"
 
-#include "linkedbst.h"
-#include "analyzer.h"
+#include "dataset.h"
 #include "csv.h"
 
 
@@ -100,18 +99,28 @@ void MainWindow::on_analyze_triggered()
 
                 for (std::pair<int, std::string> pair: this->filter_files)
                         csv::load_drug_filter(pair.second, db.filter);
+
+                db.lab_filter.insert(filter::LabFilter("a1c"));
         } catch (const std::string& ex) {
                 QMessageBox::information(this, "Couldn't load file", QString::fromStdString(ex), QMessageBox::Critical);
                 ui->status_bar->showMessage("Failed to load dataset");
                 return;
         }
 
-        LinkedBST<LabMeasure> cleaned_lab;
-        LinkedBST<MedicationOrder> cleaned_orders;
-        analysis::preprocess(db.measures, "A1C", 0.0f, db.lab_patients, cleaned_lab);
-        analysis::preprocess(db.orders, db.filter, cleaned_orders);
-        analysis::join(cleaned_lab, db.lab_patients, cleaned_orders, db.joined);
-        analysis::extract_delta(db.joined, db.delta, a1c_margin);
+        dataset::patient_measures_t measures;
+        dataset::patient_orders_t   orders;
+        dataset::make(db.measures, measures);
+        dataset::make(db.orders, orders);
+
+        dataset::patient_measures_t measures_filtered;
+        dataset::patient_orders_t orders_filtered;
+        dataset::patient_records_t records;
+        dataset::filter(measures, db.lab_filter, measures_filtered);
+        dataset::filter(orders, db.filter, orders_filtered);
+        dataset::join_time_asc(measures_filtered, orders_filtered, records);
+
+        dataset::delta(records, a1c_margin, db.delta);
+
 
         if (config_dialog->needs_output()) {
                 csv::write_delta_analysis(output_file.toStdString(), db.delta);

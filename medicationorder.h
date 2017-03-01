@@ -4,9 +4,11 @@
 
 #include <string>
 #include <ostream>
-#include "timeddata.h"
 
-class MedicationOrder: public TimedData
+namespace csv
+{
+
+class MedicationOrder
 {
         friend std::ostream& operator<<(std::ostream& os, const MedicationOrder& order);
 public:
@@ -14,8 +16,8 @@ public:
                         bool diabetes,
                         bool heart_failure,
                         const std::string& visit_type,
-                        int order_year,
-                        int start_date,
+                        unsigned order_year,
+                        unsigned start_date,
                         const std::string& order_type,
                         const std::string& order_status,
                         const std::string& discontinue_reason,
@@ -24,9 +26,9 @@ public:
                         const std::string& order_name,
                         float dose,
                         const std::string& uom,
-                        int quantity,
-                        int duration,
-                        int num_refills,
+                        unsigned quantity,
+                        unsigned duration,
+                        unsigned num_refills,
                         const std::string& route,
                         const std::string& presc_type,
                         const std::string& frequency,
@@ -34,19 +36,18 @@ public:
                         const std::string& instructions);
         MedicationOrder(int pid);
 
-        int             date() const;
-        int             end_date() const;
+        unsigned	date() const;
+        unsigned	end_date() const;
 
         bool            operator <(const MedicationOrder& rhs) const;
-        bool            operator >(const MedicationOrder& rhs) const;
 
         int             oid;
         int             pid;
         bool            diabetes;
         bool            heart_failure;
         std::string     visit_type;
-        int             order_year;
-        int             start_date;
+        unsigned 	order_year;
+        unsigned 	start_date;
         std::string     order_type;
         std::string     order_status;
         std::string     discontinue_reason;
@@ -55,16 +56,15 @@ public:
         std::string     order_name;
         float           dose;
         std::string     uom;
-        int             quantity;
-        int             duration;
-        int             num_refills;
+        unsigned	quantity;
+        unsigned 	duration;
+        unsigned	num_refills;
         std::string     route;
         std::string     presc_type;
         std::string     frequency;
         bool            is_prn;
         std::string     instructions;
 };
-
 
 inline std::ostream& operator <<(std::ostream& os, const MedicationOrder& order)
 {
@@ -94,5 +94,6 @@ inline std::ostream& operator <<(std::ostream& os, const MedicationOrder& order)
         return os;
 }
 
+}
 
 #endif  // MEDICATION_ORDER_H

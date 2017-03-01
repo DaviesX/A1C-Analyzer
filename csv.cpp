@@ -12,13 +12,11 @@
 #include "csv.h"
 
 
-namespace csv
-{
-
-static void split(const std::string& s, char delim, std::vector<std::string>& result)
+static void
+split(const std::string& s, char delim, std::vector<std::string>& result)
 {
         // Split according to the delimiter but skip quotes.
-        int last = 0;
+        unsigned last = 0;
         bool in_quote = false;
         for (unsigned i = 0; i < s.length(); i ++) {
                 if (s[i] == '\"')
@@ -34,7 +32,8 @@ static void split(const std::string& s, char delim, std::vector<std::string>& re
         }
 }
 
-static void load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows)
+static void
+load_rows(const std::string& filename, std::vector<std::vector<std::string>>& rows)
 {
         std::ifstream s(filename);
         if (!s.is_open())
@@ -44,13 +43,14 @@ static void load_rows(const std::string& filename, std::vector<std::vector<std::
         while (!s.eof()) {
                 std::getline(s, line);
                 std::vector<std::string> cols;
-                csv::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM, cols);
+                ::split(line.substr(0, line.find_last_of("\n\r")), COL_DELIM, cols);
                 rows.push_back(cols);
         }
         s.close();
 }
 
-static bool set_column_mapping(const std::string& key, const std::vector<std::string>& ddl, std::map<std::string, unsigned>& col_map)
+static bool
+set_column_mapping(const std::string& key, const std::vector<std::string>& ddl, std::map<std::string, unsigned>& col_map)
 {
         for (unsigned i = 0; i < ddl.size(); i ++) {
                 if (ddl[i] == key) {
@@ -61,9 +61,10 @@ static bool set_column_mapping(const std::string& key, const std::vector<std::st
         return false;
 }
 
-static std::string safe_fetch(const std::vector<std::string>& parts,
-                              const std::string& key,
-                              const std::map<std::string, unsigned>& col_map)
+static std::string
+safe_fetch(const std::vector<std::string>& parts,
+           const std::string& key,
+           const std::map<std::string, unsigned>& col_map)
 {
         auto it = col_map.find(key);
         if (it->second < parts.size())
@@ -72,105 +73,106 @@ static std::string safe_fetch(const std::vector<std::string>& parts,
                 return std::string("");
 }
 
-void load_medication_order(const std::string& filename, std::vector<MedicationOrder>& orders)
+void
+csv::load_medication_order(const std::string& filename, std::vector<MedicationOrder>& orders)
 {
         std::vector<std::vector<std::string>> rows;
-        csv::load_rows(filename, rows);
+        load_rows(filename, rows);
 
         bool first_row = true;
         std::map<std::string, unsigned> col_map;
         for (std::vector<std::string> parts: rows) {
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
-                        if (!csv::set_column_mapping("Id", ddl, col_map))
+                        if (!set_column_mapping("Id", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Id doesn't exist";
-                        if (!csv::set_column_mapping("Diabetes_Flag", ddl, col_map))
+                        if (!set_column_mapping("Diabetes_Flag", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Diabetes_Flag doesn't exist";
-                        if (!csv::set_column_mapping("Heart_Failure_Flag", ddl, col_map))
+                        if (!set_column_mapping("Heart_Failure_Flag", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Heart_Failure_Flag doesn't exist";
-                        if (!csv::set_column_mapping("Visit Type", ddl, col_map))
+                        if (!set_column_mapping("Visit Type", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Visit Type doesn't exist";
-                        if (!csv::set_column_mapping("OrderYear", ddl, col_map))
+                        if (!set_column_mapping("OrderYear", ddl, col_map))
                                 throw filename + " is not a medication order file: Column OrderYear doesn't exist";
-                        if (!csv::set_column_mapping("OrderDate_Days", ddl, col_map))
+                        if (!set_column_mapping("OrderDate_Days", ddl, col_map))
                                 throw filename + " is not a medication order file: Column OrderDate_Days doesn't exist";
-                        if (!csv::set_column_mapping("OrderType", ddl, col_map))
+                        if (!set_column_mapping("OrderType", ddl, col_map))
                                 throw filename + " is not a medication order file: Column OrderType doesn't exist";
-                        if (!csv::set_column_mapping("OrderStatus", ddl, col_map))
+                        if (!set_column_mapping("OrderStatus", ddl, col_map))
                                 throw filename + " is not a medication order file: Column OrderStatus doesn't exist";
-                        if (!csv::set_column_mapping("DiscontinueReason", ddl, col_map))
+                        if (!set_column_mapping("DiscontinueReason", ddl, col_map))
                                 throw filename + " is not a medication order file: Column DiscontinueReason doesn't exist";
-                        if (!csv::set_column_mapping("TherapeuticCategory", ddl, col_map))
+                        if (!set_column_mapping("TherapeuticCategory", ddl, col_map))
                                 throw filename + " is not a medication order file: Column TherapeuticCategory doesn't exist";
-                        if (!csv::set_column_mapping("GenericItemName", ddl, col_map))
+                        if (!set_column_mapping("GenericItemName", ddl, col_map))
                                 throw filename + " is not a medication order file: Column GenericItemName doesn't exist";
-                        if (!csv::set_column_mapping("GenericItemName", ddl, col_map))
+                        if (!set_column_mapping("GenericItemName", ddl, col_map))
                                 throw filename + " is not a medication order file: Column GenericItemName doesn't exist";
-                        if (!csv::set_column_mapping("Order Name", ddl, col_map))
+                        if (!set_column_mapping("Order Name", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Order Name doesn't exist";
-                        if (!csv::set_column_mapping("Dose", ddl, col_map))
+                        if (!set_column_mapping("Dose", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Dose doesn't exist";
-                        if (!csv::set_column_mapping("UOM", ddl, col_map))
+                        if (!set_column_mapping("UOM", ddl, col_map))
                                 throw filename + " is not a medication order file: Column UOM doesn't exist";
-                        if (!csv::set_column_mapping("QuantityAmount", ddl, col_map))
+                        if (!set_column_mapping("QuantityAmount", ddl, col_map))
                                 throw filename + " is not a medication order file: Column QuantityAmount doesn't exist";
-                        if (!csv::set_column_mapping("DurationAmount", ddl, col_map))
+                        if (!set_column_mapping("DurationAmount", ddl, col_map))
                                 throw filename + " is not a medication order file: Column DurationAmount doesn't exist";
-                        if (!csv::set_column_mapping("NumRefills", ddl, col_map))
+                        if (!set_column_mapping("NumRefills", ddl, col_map))
                                 throw filename + " is not a medication order file: Column NumRefills doesn't exist";
-                        if (!csv::set_column_mapping("Route", ddl, col_map))
+                        if (!set_column_mapping("Route", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Route doesn't exist";
-                        if (!csv::set_column_mapping("PrescriptionType", ddl, col_map))
+                        if (!set_column_mapping("PrescriptionType", ddl, col_map))
                                 throw filename + " is not a medication order file: Column PrescriptionType doesn't exist";
-                        if (!csv::set_column_mapping("Frequency", ddl, col_map))
+                        if (!set_column_mapping("Frequency", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Frequency doesn't exist";
-                        if (!csv::set_column_mapping("IsPRN", ddl, col_map))
+                        if (!set_column_mapping("IsPRN", ddl, col_map))
                                 throw filename + " is not a medication order file: Column isPRN doesn't exist";
-                        if (!csv::set_column_mapping("Instructions", ddl, col_map))
+                        if (!set_column_mapping("Instructions", ddl, col_map))
                                 throw filename + " is not a medication order file: Column Instructions doesn't exist";
                         first_row = false;
                 } else {
                         if (parts.size() > 0) {
-                                const std::string id                    = csv::safe_fetch(parts, "Id", col_map);
-                                const std::string diabetes_flag         = csv::safe_fetch(parts, "Diabetes_Flag", col_map);
-                                const std::string heart_failure_flag    = csv::safe_fetch(parts, "Heart_Failure_Flag", col_map);
-                                const std::string visit_type            = csv::safe_fetch(parts, "Visit Type", col_map);
-                                const std::string order_year            = csv::safe_fetch(parts, "OrderYear", col_map);
-                                const std::string order_date_days       = csv::safe_fetch(parts, "OrderDate_Days", col_map);
-                                const std::string order_type            = csv::safe_fetch(parts, "OrderType", col_map);
-                                const std::string order_status          = csv::safe_fetch(parts, "OrderStatus", col_map);
-                                const std::string discon_reason         = csv::safe_fetch(parts, "DiscontinueReason", col_map);
-                                const std::string med_categ             = csv::safe_fetch(parts, "TherapeuticCategory", col_map);
-                                const std::string med_name              = csv::safe_fetch(parts, "GenericItemName", col_map);
-                                const std::string order_name            = csv::safe_fetch(parts, "Order Name", col_map);
-                                const std::string dose                  = csv::safe_fetch(parts, "Dose", col_map);
-                                const std::string uom                   = csv::safe_fetch(parts, "UOM", col_map);
-                                const std::string quan_amount           = csv::safe_fetch(parts, "QuantityAmount", col_map);
-                                const std::string duration              = csv::safe_fetch(parts, "DurationAmount", col_map);
-                                const std::string num_refills           = csv::safe_fetch(parts, "NumRefills", col_map);
-                                const std::string route                 = csv::safe_fetch(parts, "Route", col_map);
-                                const std::string presc_type            = csv::safe_fetch(parts, "PrescriptionType", col_map);
-                                const std::string frequency             = csv::safe_fetch(parts, "Frequency", col_map);
-                                const std::string is_prn                = csv::safe_fetch(parts, "IsPRN", col_map);
-                                const std::string instructions          = csv::safe_fetch(parts, "Instructions", col_map);
+                                const std::string id                    = safe_fetch(parts, "Id", col_map);
+                                const std::string diabetes_flag         = safe_fetch(parts, "Diabetes_Flag", col_map);
+                                const std::string heart_failure_flag    = safe_fetch(parts, "Heart_Failure_Flag", col_map);
+                                const std::string visit_type            = safe_fetch(parts, "Visit Type", col_map);
+                                const std::string order_year            = safe_fetch(parts, "OrderYear", col_map);
+                                const std::string order_date_days       = safe_fetch(parts, "OrderDate_Days", col_map);
+                                const std::string order_type            = safe_fetch(parts, "OrderType", col_map);
+                                const std::string order_status          = safe_fetch(parts, "OrderStatus", col_map);
+                                const std::string discon_reason         = safe_fetch(parts, "DiscontinueReason", col_map);
+                                const std::string med_categ             = safe_fetch(parts, "TherapeuticCategory", col_map);
+                                const std::string med_name              = safe_fetch(parts, "GenericItemName", col_map);
+                                const std::string order_name            = safe_fetch(parts, "Order Name", col_map);
+                                const std::string dose                  = safe_fetch(parts, "Dose", col_map);
+                                const std::string uom                   = safe_fetch(parts, "UOM", col_map);
+                                const std::string quan_amount           = safe_fetch(parts, "QuantityAmount", col_map);
+                                const std::string duration              = safe_fetch(parts, "DurationAmount", col_map);
+                                const std::string num_refills           = safe_fetch(parts, "NumRefills", col_map);
+                                const std::string route                 = safe_fetch(parts, "Route", col_map);
+                                const std::string presc_type            = safe_fetch(parts, "PrescriptionType", col_map);
+                                const std::string frequency             = safe_fetch(parts, "Frequency", col_map);
+                                const std::string is_prn                = safe_fetch(parts, "IsPRN", col_map);
+                                const std::string instructions          = safe_fetch(parts, "Instructions", col_map);
 
                                 orders.push_back(MedicationOrder(std::atoi(id.c_str()),
                                                                  diabetes_flag == "Yes",
                                                                  heart_failure_flag == "Yes",
                                                                  visit_type,
-                                                                 std::atoi(order_year.c_str()),
-                                                                 std::atoi(order_date_days.c_str()),
+                                                                 static_cast<unsigned>(std::atoi(order_year.c_str())),
+                                                                 static_cast<unsigned>(std::atoi(order_date_days.c_str())),
                                                                  order_type,
                                                                  order_status,
                                                                  discon_reason,
                                                                  med_categ,
                                                                  med_name,
                                                                  order_name,
-                                                                 std::atof(dose.c_str()),
+                                                                 static_cast<float>(std::atof(dose.c_str())),
                                                                  uom,
-                                                                 std::atoi(quan_amount.c_str()),
-                                                                 std::atoi(duration.c_str()),
-                                                                 std::atoi(num_refills.c_str()),
+                                                                 static_cast<unsigned>(std::atoi(quan_amount.c_str())),
+                                                                 static_cast<unsigned>(std::atoi(duration.c_str())),
+                                                                 static_cast<unsigned>(std::atoi(num_refills.c_str())),
                                                                  route,
                                                                  presc_type,
                                                                  frequency,
@@ -181,10 +183,11 @@ void load_medication_order(const std::string& filename, std::vector<MedicationOr
         }
 }
 
-void load_lab_measure(const std::string& filename, std::vector<LabMeasure>& measures)
+void
+csv::load_lab_measure(const std::string& filename, std::vector<LabMeasure>& measures)
 {
         std::vector<std::vector<std::string>> rows;
-        csv::load_rows(filename, rows);
+        load_rows(filename, rows);
 
         bool first_row = true;
         std::map<std::string, unsigned> col_map;
@@ -192,13 +195,13 @@ void load_lab_measure(const std::string& filename, std::vector<LabMeasure>& meas
         for (std::vector<std::string> parts: rows) {
                 if (first_row) {
                         std::vector<std::string>& ddl = parts;
-                        if (!csv::set_column_mapping("Id", ddl, col_map))
+                        if (!set_column_mapping("Id", ddl, col_map))
                                 throw filename + " is not a lab test file: Column Id doesn't exist";
-                        if (!csv::set_column_mapping("Result", ddl, col_map))
+                        if (!set_column_mapping("Result", ddl, col_map))
                                 throw filename + " is not a lab test file: Column Result doesn't exist";
-                        if (!csv::set_column_mapping("Observation", ddl, col_map))
+                        if (!set_column_mapping("Observation", ddl, col_map))
                                 throw filename + " is not a lab test file: Column Observation doesn't exist";
-                        if (!csv::set_column_mapping("Result_Days", ddl, col_map))
+                        if (!set_column_mapping("Result_Days", ddl, col_map))
                                 throw filename + " is not a lab test file: Column Result_Days doesn't exist";
                         min = std::max(min, col_map["Id"]);
                         min = std::max(min, col_map["Result"]);
@@ -211,12 +214,17 @@ void load_lab_measure(const std::string& filename, std::vector<LabMeasure>& meas
                                 const std::string& date_offset = parts[col_map["Result_Days"]];
                                 const std::string& desc = parts[col_map["Observation"]];
                                 const std::string& result = parts[col_map["Result"]];
-                                measures.push_back(LabMeasure(std::atoi(id.c_str()), std::atoi(date_offset.c_str()), desc, std::atof(result.c_str())));
+                                measures.push_back(LabMeasure(std::atoi(id.c_str()),
+                                                              static_cast<unsigned>(std::atoi(date_offset.c_str())), desc,
+                                                              static_cast<float>(std::atof(result.c_str()))));
                         }
                 }
         }
 }
 
+/*
+ * Need not to purify.
+ *
 static std::string purify(const std::string& s)
 {
         std::string r;
@@ -225,8 +233,10 @@ static std::string purify(const std::string& s)
         }
         return r;
 }
+*/
 
-void write_delta_analysis(const std::string& filename, std::vector<Delta>& analysis)
+void
+csv::write_delta_analysis(const std::string& filename, std::vector<Delta>& analysis)
 {
         std::ofstream file(filename);
         if (!file.is_open())
@@ -241,19 +251,33 @@ void write_delta_analysis(const std::string& filename, std::vector<Delta>& analy
         file.close();
 }
 
-void load_drug_filter(const std::string& filename, std::vector<DrugFilter>& filter)
+void
+csv::write_delta_analysis(const std::string& filename, std::vector<SimpleDelta>& analysis)
+{
+        std::ofstream file(filename);
+        if (!file.is_open())
+                throw std::string("Failed to write to " + filename);
+
+        SimpleDelta::write_head(file);
+        file << std::endl;
+        for (SimpleDelta delta: analysis) {
+                delta.write(file);
+                file << std::endl;
+        }
+        file.close();
+}
+
+void
+csv::load_drug_filter(const std::string& filename, std::set<filter::DrugFilter>& filter)
 {
         std::vector<std::vector<std::string>> rows;
-        csv::load_rows(filename, rows);
+        load_rows(filename, rows);
 
         for (std::vector<std::string> parts: rows) {
                 const std::string& category = parts[0];
                 const std::string& b = parts[1];
                 if (parts.size() == 0)
                         continue;
-                filter.push_back(DrugFilter(category, b == "0"));
+                filter.insert(filter::DrugFilter(category, b == "0"));
         }
 }
-
-}
-

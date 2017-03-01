@@ -1,49 +1,76 @@
+#include <limits>
 #include "medicationorder.h"
 #include "labmeasure.h"
 #include "delta.h"
 
 
-Delta::Delta(const MedicationOrder& order,
-                             const LabMeasure& lab):
-        order(order),
-        lab(lab),
-        delta_tr(0),
-        delta_tm(0),
-        triggered(false),
-        medication_changed(false)
+// Simple Delta.
+csv::SimpleDelta::SimpleDelta(int pid, unsigned date, float a1c):
+        pid(pid), a1c(a1c), date(date)
 {
 }
 
-void Delta::write(std::ostream& os) const
+void
+csv::SimpleDelta::write(std::ostream& os) const
 {
-        os << order.pid << ","
-           << order.diabetes << ","
-           << order.heart_failure << ","
-           << order.visit_type << ","
-           << order.order_year << ","
-           << order.start_date << ","
-           << order.order_type << ","
-           << order.order_status << ","
-           << order.discontinue_reason << ","
-           << order.med_category << ","
-           << order.med_name << ","
-           << order.order_name << ","
-           << order.dose << ","
-           << order.uom << ","
-           << order.quantity << ","
-           << order.duration << ","
-           << order.num_refills << ","
-           << order.route << ","
-           << order.presc_type << ","
-           << order.frequency << ","
-           << order.is_prn << ","
-           << order.instructions << ","
-
-           << lab.test_date << ","
-           << lab.observation << ","
-           << lab.a1c << ","
-
+        os << pid << ",";
+        if (date == std::numeric_limits<unsigned>::max())	os << ",";
+        else							os << date << ",";
+        os << a1c << ","
            << delta_tr << ","
+           << delta_tm << ","
+           << triggered << ","
+           << recovered << ","
+           << medication_changed;
+}
+
+// Full Delta.
+csv::Delta::Delta(const MedicationOrder& order, const LabMeasure& lab):
+        SimpleDelta(lab.pid, order.date(), lab.a1c), order(order), lab(lab), has_order(true)
+{
+}
+
+csv::Delta::Delta(const LabMeasure& lab):
+        SimpleDelta(lab.pid, lab.date(), lab.a1c), order(lab.pid), lab(lab), has_order(false)
+{
+}
+
+void
+csv::Delta::write(std::ostream& os) const
+{
+        if (has_order) {
+                os << pid << ","
+                   << order.diabetes << ","
+                   << order.heart_failure << ","
+                   << order.visit_type << ","
+                   << order.order_year << ","
+                   << order.start_date << ","
+                   << order.order_type << ","
+                   << order.order_status << ","
+                   << order.discontinue_reason << ","
+                   << order.med_category << ","
+                   << order.med_name << ","
+                   << order.order_name << ","
+                   << order.dose << ","
+                   << order.uom << ","
+                   << order.quantity << ","
+                   << order.duration << ","
+                   << order.num_refills << ","
+                   << order.route << ","
+                   << order.presc_type << ","
+                   << order.frequency << ","
+                   << order.is_prn << ","
+                   << order.instructions << ",";
+        } else {
+                os << ",,,,,,,,,,,,,,,,,,,,,,";
+        }
+
+        if (date == std::numeric_limits<unsigned>::max())	os << ",";
+        else							os << lab.test_date << ",";
+        os << lab.observation << ","
+           << lab.a1c << ",";
+
+        os << delta_tr << ","
            << delta_tm << ","
            << triggered << ","
            << recovered << ","

@@ -16,42 +16,36 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         mainwindow.cpp \
-    linkedlist.cpp \
-    bst.cpp \
-    tst_testlinkedlist.cpp \
-    tst_testbst.cpp \
     labmeasure.cpp \
     medicationorder.cpp \
     csv.cpp \
-    linkedbst.cpp \
     tst_testcsv.cpp \
-    analyzer.cpp \
     tst_testanalysis.cpp \
-    timeddata.cpp \
     configdialog.cpp \
     drugfilter.cpp \
     database.cpp \
     querydialog.cpp \
-    delta.cpp
+    delta.cpp \
+    labfilter.cpp \
+    patientrecord.cpp \
+    dataset.cpp \
+    statistics.cpp
 
 HEADERS  += mainwindow.h \
-    linkedlist.h \
-    bst.h \
-    tst_testlinkedlist.h \
-    tst_testbst.h \
     labmeasure.h \
     medicationorder.h \
     csv.h \
-    linkedbst.h \
     tst_testcsv.h \
-    analyzer.h \
     tst_testanalysis.h \
-    timeddata.h \
     configdialog.h \
     drugfilter.h \
     database.h \
     querydialog.h \
-    delta.h
+    delta.h \
+    labfilter.h \
+    patientrecord.h \
+    dataset.h \
+    statistics.h
 
 FORMS    += mainwindow.ui \
     configdialog.ui \

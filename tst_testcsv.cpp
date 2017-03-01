@@ -9,16 +9,16 @@
 
 void test_csv()
 {
-        std::vector<MedicationOrder> orders;
+        std::vector<csv::MedicationOrder> orders;
 
         csv::load_medication_order("in_order.csv", orders);
-        for (MedicationOrder order: orders) {
+        for (csv::MedicationOrder order: orders) {
                 std::cout << order << std::endl;
         }
 
-        std::vector<LabMeasure> measures;
+        std::vector<csv::LabMeasure> measures;
         csv::load_lab_measure("lab.csv", measures);
-        for (LabMeasure measure: measures) {
+        for (csv::LabMeasure measure: measures) {
                 std::cout << measure << std::endl;
         }
 

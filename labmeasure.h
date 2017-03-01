@@ -5,24 +5,25 @@
 #include <string>
 #include <ostream>
 #include <cmath>
-#include "timeddata.h"
 
-class LabMeasure: public TimedData
+namespace csv
+{
+
+
+class LabMeasure
 {
         friend std::ostream& operator<<(std::ostream& os, const LabMeasure& measure);
 public:
         LabMeasure(int pid,
-                   int test_date,
+                   unsigned test_date,
                    const std::string& observation,
                    float a1c);
         LabMeasure(int pid);
 
-        bool            operator <(const LabMeasure& rhs) const;
-        bool            operator >(const LabMeasure& rhs) const;
-        int             date() const;
+        unsigned	date() const;
 
         int             pid = -1;
-        int             test_date = 0;
+        unsigned 	test_date = 0;
         std::string     observation = "";
         float           a1c = NAN;
 };
@@ -35,6 +36,8 @@ inline std::ostream& operator <<(std::ostream& os, const LabMeasure& measure)
            << measure.observation << ","
            << measure.a1c << "]";
         return os;
+}
+
 }
 
 

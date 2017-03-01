@@ -1,17 +1,17 @@
 #include "database.h"
 
-Database::Database()
+dataset::Database::Database()
 {
 
 }
 
-void Database::reset()
+void
+dataset::Database::reset()
 {
         orders.clear();
         measures.clear();
         filter.clear();
+        lab_filter.clear();
 
-        joined.clear();
-        delta.clear();
-        lab_patients.clear();
+        records.clear();
 }

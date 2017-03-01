@@ -3,38 +3,48 @@
 #include <set>
 #include "csv.h"
 #include "delta.h"
-#include "analyzer.h"
+#include "dataset.h"
 #include "drugfilter.h"
+#include "labfilter.h"
 #include "tst_testanalysis.h"
 
 
-void test_delta_analysis()
+void test::test_delta_analysis()
 {
-        std::vector<DrugFilter> filter;
-        csv::load_drug_filter("filter.csv", filter);
+        float const a1c_margin = 7.5f;
 
-        std::vector<MedicationOrder> orders;
+        std::set<filter::DrugFilter> drug_filter;
+        csv::load_drug_filter("../filter.csv", drug_filter);
 
-        //csv::load_medication_order("order.csv", orders);
-        csv::load_medication_order("order2.csv", orders);
+        std::set<filter::LabFilter> lab_filter;
+        lab_filter.insert(filter::LabFilter("A1C"));
 
-        std::vector<LabMeasure> measures;
-        csv::load_lab_measure("lab.csv", measures);
+        std::vector<csv::MedicationOrder> in_orders;
 
-        LinkedBST<LabMeasure> cleaned_lab;
-        LinkedBST<MedicationOrder> cleaned_orders;
-        std::set<int> lab_patients;
+        //csv::load_medication_order("order.csv", in_orders);
+        //csv::load_medication_order("order2.csv", in_orders);
+        csv::load_medication_order("../out_order.csv", in_orders);
 
-        analysis::preprocess(measures, "A1C", 0.0f, lab_patients, cleaned_lab);
-        analysis::preprocess(orders, filter, cleaned_orders);
+        std::vector<csv::LabMeasure> in_measures;
+        csv::load_lab_measure("../lab.csv", in_measures);
 
-        std::vector<Delta> joined, delta;
-        analysis::join(cleaned_lab, lab_patients, cleaned_orders, joined);
-        analysis::extract_delta(joined, delta, 8.0f);
+        dataset::patient_measures_t measures;
+        dataset::patient_orders_t   orders;
+        dataset::make(in_measures, measures);
+        dataset::make(in_orders, orders);
 
-        //for (auto d: delta)
-        //        std::cout << d << std::endl;
+        dataset::patient_measures_t measures_filtered;
+        dataset::patient_orders_t orders_filtered;
+        dataset::patient_records_t records;
+        dataset::filter(measures, lab_filter, measures_filtered);
+        dataset::filter(orders, drug_filter, orders_filtered);
+        dataset::join_time_asc(measures_filtered, orders_filtered, records);
 
-        csv::write_delta_analysis("result.csv", delta);
+        std::vector<csv::Delta> delta;
+        std::vector<csv::SimpleDelta> simple_delta;
+        dataset::delta(records, a1c_margin, delta);
+        dataset::delta(records, a1c_margin, simple_delta);
+        csv::write_delta_analysis("../test_result.csv", delta);
+        csv::write_delta_analysis("../test_result_merged.csv", simple_delta);
 }
 

@@ -13,7 +13,7 @@ class QueryDialog : public QDialog
         Q_OBJECT
 
 public:
-        explicit QueryDialog(QWidget *parent, Database& db);
+        explicit QueryDialog(QWidget *parent, dataset::Database& db);
         ~QueryDialog();
 
 private slots:
@@ -22,7 +22,7 @@ private slots:
 private:
         Ui::QueryDialog *ui;
 
-        Database&       db;
+        dataset::Database&	db;
 };
 
 #endif // QUERYDIALOG_H

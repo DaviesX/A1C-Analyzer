@@ -49,7 +49,7 @@ private:
         std::map<int, std::string>      order_files;
         std::map<int, std::string>      filter_files;
 
-        Database                        db;
+        dataset::Database               db;
 
         bool                            needs_analysis = true;
 
