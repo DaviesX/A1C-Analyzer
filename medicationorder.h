@@ -17,7 +17,7 @@ public:
                         bool heart_failure,
                         const std::string& visit_type,
                         unsigned order_year,
-                        unsigned start_date,
+                        int start_date,
                         const std::string& order_type,
                         const std::string& order_status,
                         const std::string& discontinue_reason,
@@ -36,8 +36,8 @@ public:
                         const std::string& instructions);
         MedicationOrder(int pid);
 
-        unsigned	date() const;
-        unsigned	end_date() const;
+        int		date() const;
+        int		end_date() const;
 
         bool            operator <(const MedicationOrder& rhs) const;
 
@@ -47,7 +47,7 @@ public:
         bool            heart_failure;
         std::string     visit_type;
         unsigned 	order_year;
-        unsigned 	start_date;
+        int             start_date;
         std::string     order_type;
         std::string     order_status;
         std::string     discontinue_reason;

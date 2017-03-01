@@ -79,7 +79,8 @@ dataset::filter(const patient_measures_t& measures, const std::set<filter::LabFi
                                 target.push_back(measure);
                         }
                 }
-                filtered.insert(patient_measure_t(it->first, target));
+                if (!target.empty())
+                        filtered.insert(patient_measure_t(it->first, target));
         }
 }
 
@@ -94,7 +95,8 @@ dataset::filter(const patient_orders_t& orders, const std::set<filter::DrugFilte
                                 target.push_back(order);
                         }
                 }
-                filtered.insert(patient_order_t(it->first, target));
+                if (!target.empty())
+                        filtered.insert(patient_order_t(it->first, target));
         }
 }
 
@@ -131,4 +133,24 @@ dataset::delta(const patient_records_t& record, float a1c, std::vector<csv::Simp
                 it->second.get_analysis(a1c, patient_deltas);
                 delta.insert(delta.end(), patient_deltas.begin(), patient_deltas.end());
         }
+}
+
+void
+dataset::statistics(const patient_records_t& records, float a1c, analysis::Statistics& stat)
+{
+        unsigned n = 0;
+        unsigned r = 0;
+        for (patient_records_t::const_iterator it = records.begin(); it != records.end(); ++ it) {
+                bool has_over_margin = it->second.has_over_margin(a1c);
+                bool has_recovered = it->second.has_recovered(a1c);
+                r += has_over_margin && has_recovered;
+                n += has_over_margin;
+                if (has_recovered && has_over_margin) {
+                        unsigned l = it->second.total_recovery_length(a1c);
+                        analysis::int_dist_add_sample(stat.dist_r_len,
+                                                      analysis::int_dist_ent_t(static_cast<int>(l), 1));
+                }
+        }
+        analysis::int_dist_normalize(stat.dist_r_len);
+        stat.p_recovered = static_cast<float>(r)/n;
 }

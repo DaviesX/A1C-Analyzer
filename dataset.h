@@ -10,6 +10,7 @@
 #include "drugfilter.h"
 #include "patientrecord.h"
 #include "delta.h"
+#include "statistics.h"
 
 namespace dataset
 {
@@ -35,6 +36,8 @@ void join_time_asc(const patient_measures_t& measures, const patient_orders_t& o
 
 void delta(const patient_records_t& record, float a1c, std::vector<csv::Delta>& delta);
 void delta(const patient_records_t& record, float a1c, std::vector<csv::SimpleDelta>& delta);
+
+void statistics(const patient_records_t& records, float a1c, analysis::Statistics& stat);
 
 }
 

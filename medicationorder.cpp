@@ -8,7 +8,7 @@ csv::MedicationOrder::MedicationOrder(int pid,
                                       bool heart_failure,
                                       const std::string& visit_type,
                                       unsigned order_year,
-                                      unsigned start_date,
+                                      int start_date,
                                       const std::string& order_type,
                                       const std::string& order_status,
                                       const std::string& discontinue_reason,
@@ -56,12 +56,14 @@ csv::MedicationOrder::MedicationOrder(int pid):
 {
 }
 
-unsigned csv::MedicationOrder::date() const
+int
+csv::MedicationOrder::date() const
 {
         return start_date;
 }
 
-unsigned csv::MedicationOrder::end_date() const
+int
+csv::MedicationOrder::end_date() const
 {
-        return start_date + duration;
+        return start_date + static_cast<int>(duration);
 }

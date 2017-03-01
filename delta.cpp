@@ -5,7 +5,7 @@
 
 
 // Simple Delta.
-csv::SimpleDelta::SimpleDelta(int pid, unsigned date, float a1c):
+csv::SimpleDelta::SimpleDelta(int pid, int date, float a1c):
         pid(pid), a1c(a1c), date(date)
 {
 }
@@ -14,8 +14,7 @@ void
 csv::SimpleDelta::write(std::ostream& os) const
 {
         os << pid << ",";
-        if (date == std::numeric_limits<unsigned>::max())	os << ",";
-        else							os << date << ",";
+        os << date << ",";
         os << a1c << ","
            << delta_tr << ","
            << delta_tm << ","
@@ -65,8 +64,7 @@ csv::Delta::write(std::ostream& os) const
                 os << ",,,,,,,,,,,,,,,,,,,,,,";
         }
 
-        if (date == std::numeric_limits<unsigned>::max())	os << ",";
-        else							os << lab.test_date << ",";
+        os << lab.test_date << ",";
         os << lab.observation << ","
            << lab.a1c << ",";
 

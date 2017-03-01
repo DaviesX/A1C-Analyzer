@@ -57,11 +57,11 @@ struct SM {
         bool 			is_triggered = false;
         bool			is_triggered_m = false;
         bool 			is_recovered = false;
-        unsigned 		trigger_date = 0;
+        int 			trigger_date = 0;
         categorized_orders_t	curr_orders;
-        unsigned		curr_date;
+        int			curr_date;
 
-        void transit(const csv::LabMeasure& lab, unsigned date, float a1c_margin)
+        void transit(const csv::LabMeasure& lab, int date, float a1c_margin)
         {
                 curr_date = date;
                 if (lab.a1c >= a1c_margin) {
@@ -74,7 +74,7 @@ struct SM {
                 }
         }
 
-        void transit(const csv::MedicationOrder& order, unsigned date)
+        void transit(const csv::MedicationOrder& order, int date)
         {
                 curr_date = date;
 
@@ -129,8 +129,8 @@ analysis::PatientRecord::get_analysis(float a1c, std::vector<csv::Delta>& deltas
 {
         SM sm;
         for (unsigned i = 0; i < labs.size(); i ++) {
-                unsigned t_curr_lab = labs[i].date();
-                unsigned t_next_lab = i == labs.size() - 1 ? std::numeric_limits<unsigned>::max() : labs[i + 1].date();
+                int t_curr_lab = labs[i].date();
+                int t_next_lab = i == labs.size() - 1 ? std::numeric_limits<int>::max() : labs[i + 1].date();
 
                 sm.transit(labs[i], labs[i].date(), a1c);
                 csv::Delta lab_delta(labs[i]);
@@ -155,7 +155,7 @@ analysis::PatientRecord::get_analysis(float a1c, std::vector<csv::SimpleDelta>& 
         get_analysis(a1c, detailed);
 
         for (unsigned i = 0; i < detailed.size(); i ++) {
-                unsigned date = detailed[i].date;
+                int date = detailed[i].date;
                 csv::SimpleDelta curr_delta = detailed[i];
                 while (i < detailed.size() && date == detailed[i + 1].date) {
                         for (unsigned k = 0; k < sizeof(curr_delta.trigger_class); k ++) {
@@ -169,7 +169,7 @@ analysis::PatientRecord::get_analysis(float a1c, std::vector<csv::SimpleDelta>& 
 }
 
 void
-analysis::PatientRecord::get_analysis(unsigned around, std::vector<csv::MedicationOrder>& orders) const
+analysis::PatientRecord::get_analysis(int around, std::vector<csv::MedicationOrder>& orders) const
 {
         for (unsigned j = 0; j < orders.size() && orders[j].date() <= around; j ++) {
                 if (orders[j].end_date() >= around) {
@@ -182,4 +182,26 @@ bool
 analysis::PatientRecord::has_recovered(float a1c) const
 {
        return labs[labs.size() - 1].a1c < a1c;
+}
+
+bool
+analysis::PatientRecord::has_over_margin(float a1c) const
+{
+        for (csv::LabMeasure lab: labs) {
+                if (lab.a1c >= a1c)
+                        return true;
+        }
+        return false;
+}
+
+unsigned
+analysis::PatientRecord::total_recovery_length(float a1c) const
+{
+        int start_time = labs[0].date();
+        int end_time = std::numeric_limits<int>::max();
+        for (csv::LabMeasure lab: labs) {
+                if (lab.a1c < a1c)
+                        end_time = lab.date();
+        }
+        return static_cast<unsigned>(end_time - start_time + 1);
 }

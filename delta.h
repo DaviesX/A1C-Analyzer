@@ -27,7 +27,7 @@ public:
         }
 
 public:
-        SimpleDelta(int pid, unsigned date, float a1c);
+        SimpleDelta(int pid, int date, float a1c);
 
         void write(std::ostream& os) const;
 public:
@@ -38,7 +38,7 @@ public:
         bool 		triggered = false;
         bool 		recovered = false;
         bool 		medication_changed = false;
-        unsigned	date = 0;
+        int 		date = 0;
         bool		trigger_class[4];
 };
 

@@ -161,7 +161,7 @@ csv::load_medication_order(const std::string& filename, std::vector<MedicationOr
                                                                  heart_failure_flag == "Yes",
                                                                  visit_type,
                                                                  static_cast<unsigned>(std::atoi(order_year.c_str())),
-                                                                 static_cast<unsigned>(std::atoi(order_date_days.c_str())),
+                                                                 static_cast<int>(std::atoi(order_date_days.c_str())),
                                                                  order_type,
                                                                  order_status,
                                                                  discon_reason,
@@ -215,7 +215,7 @@ csv::load_lab_measure(const std::string& filename, std::vector<LabMeasure>& meas
                                 const std::string& desc = parts[col_map["Observation"]];
                                 const std::string& result = parts[col_map["Result"]];
                                 measures.push_back(LabMeasure(std::atoi(id.c_str()),
-                                                              static_cast<unsigned>(std::atoi(date_offset.c_str())), desc,
+                                                              static_cast<int>(std::atoi(date_offset.c_str())), desc,
                                                               static_cast<float>(std::atof(result.c_str()))));
                         }
                 }

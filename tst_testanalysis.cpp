@@ -6,6 +6,8 @@
 #include "dataset.h"
 #include "drugfilter.h"
 #include "labfilter.h"
+#include "patientrecord.h"
+#include "statistics.h"
 #include "tst_testanalysis.h"
 
 
@@ -46,5 +48,9 @@ void test::test_delta_analysis()
         dataset::delta(records, a1c_margin, simple_delta);
         csv::write_delta_analysis("../test_result.csv", delta);
         csv::write_delta_analysis("../test_result_merged.csv", simple_delta);
+
+        analysis::Statistics stat;
+        dataset::statistics(records, a1c_margin, stat);
+        std::cout << stat << std::endl;
 }
 

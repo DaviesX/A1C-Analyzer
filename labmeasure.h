@@ -15,15 +15,15 @@ class LabMeasure
         friend std::ostream& operator<<(std::ostream& os, const LabMeasure& measure);
 public:
         LabMeasure(int pid,
-                   unsigned test_date,
+                   int test_date,
                    const std::string& observation,
                    float a1c);
         LabMeasure(int pid);
 
-        unsigned	date() const;
+        int		date() const;
 
         int             pid = -1;
-        unsigned 	test_date = 0;
+        int		test_date = 0;
         std::string     observation = "";
         float           a1c = NAN;
 };
