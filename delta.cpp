@@ -8,6 +8,17 @@
 csv::SimpleDelta::SimpleDelta(int pid, int date, float a1c):
         pid(pid), a1c(a1c), date(date)
 {
+        for (unsigned i = 0; i < sizeof(trigger_class); i ++)
+                trigger_class[i] = false;
+}
+
+static std::string purify(const std::string& s)
+{
+        std::string r;
+        for (unsigned i = 0; i < s.length(); i ++) {
+                r += s.at(i) == ',' ? '*' : s.at(i);
+        }
+        return r;
 }
 
 void
@@ -21,6 +32,13 @@ csv::SimpleDelta::write(std::ostream& os) const
            << triggered << ","
            << recovered << ","
            << medication_changed;
+
+        for (unsigned i = 0; i < sizeof(trigger_class); i ++) {
+                os << ",";
+                os << (trigger_class[i] ? 1 : 0);
+        }
+        os << ",";
+        os << purify(what);
 }
 
 // Full Delta.
@@ -73,4 +91,11 @@ csv::Delta::write(std::ostream& os) const
            << triggered << ","
            << recovered << ","
            << medication_changed;
+
+        for (unsigned i = 0; i < sizeof(trigger_class); i ++) {
+                os << ",";
+                os << (trigger_class[i] ? 1 : 0);
+        }
+        os << ",";
+        os << purify(what);
 }

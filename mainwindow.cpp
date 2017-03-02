@@ -107,10 +107,14 @@ void MainWindow::on_analyze_triggered()
                 return;
         }
 
+        std::set<csv::MedCategory> med_categ;
+        std::set<csv::Order2Category> o2c;
+        dataset::join(o2c, med_categ);
+
         dataset::patient_measures_t measures;
         dataset::patient_orders_t   orders;
         dataset::make(db.measures, measures);
-        dataset::make(db.orders, orders);
+        dataset::make(db.orders, med_categ, o2c, orders);
 
         dataset::patient_measures_t measures_filtered;
         dataset::patient_orders_t orders_filtered;

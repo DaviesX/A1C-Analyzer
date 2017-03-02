@@ -44,9 +44,21 @@ dataset::make(const std::vector<csv::LabMeasure>& in, patient_measures_t& out)
 }
 
 void
-dataset::make(const std::vector<csv::MedicationOrder>& in, patient_orders_t& out)
+dataset::make(const std::vector<csv::MedicationOrder>& in,
+              const std::set<csv::MedCategory>& med_categ,
+              const std::set<csv::Order2Category>& order2categ, patient_orders_t& out)
 {
-        for (const csv::MedicationOrder& order: in) {
+        for (csv::MedicationOrder order: in) {
+                auto o2c_it = order2categ.find(order.order_name);
+                if (o2c_it != order2categ.end()) {
+                        if (o2c_it->med_code != -1)	order.med_category = o2c_it->med_categ;
+                        else				continue;
+                }
+
+                auto categ_it = med_categ.find(order.med_category);
+                if (categ_it != med_categ.end())        order.med_class = categ_it->get_class();
+                else 					order.med_class = -1;
+
                 patient_orders_t::iterator it = out.find(order.pid);
                 if (it == out.end()) {
                         std::vector<csv::MedicationOrder> orders;
@@ -54,6 +66,21 @@ dataset::make(const std::vector<csv::MedicationOrder>& in, patient_orders_t& out
                         out.insert(patient_order_t(order.pid, orders));
                 } else {
                         it->second.push_back(order);
+                }
+        }
+}
+
+void
+dataset::join(std::set<csv::Order2Category>& order_map, const std::set<csv::MedCategory>& med_categ)
+{
+        std::map<int, std::string> code2categ;
+        for (csv::MedCategory categ: med_categ)
+                code2categ.insert(std::pair<int, std::string>(categ.get_code(), categ.get_category()));
+
+        for (std::set<csv::Order2Category>::iterator it = order_map.begin(); it != order_map.end(); ++ it) {
+                auto corr = code2categ.find(it->med_code);
+                if (corr != code2categ.end()) {
+                        it->med_categ = corr->second;
                 }
         }
 }

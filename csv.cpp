@@ -281,3 +281,67 @@ csv::load_drug_filter(const std::string& filename, std::set<filter::DrugFilter>&
                 filter.insert(filter::DrugFilter(category, b == "0"));
         }
 }
+
+void
+csv::load_medication_category(const std::string& filename, std::set<MedCategory>& categ)
+{
+        std::vector<std::vector<std::string>> rows;
+        load_rows(filename, rows);
+
+        bool first_row = true;
+        std::map<std::string, unsigned> col_map;
+        unsigned min = 0;
+        for (std::vector<std::string> parts: rows) {
+                if (first_row) {
+                        std::vector<std::string>& ddl = parts;
+                        if (!set_column_mapping("TherapeuticCategory", ddl, col_map))
+                                throw filename + " is not a medication category file: Column TherapeuticCategory doesn't exist";
+                        if (!set_column_mapping("Assigned number", ddl, col_map))
+                                throw filename + " is not a medication category file: Column Assigned number doesn't exist";
+                        if (!set_column_mapping("Class", ddl, col_map))
+                                throw filename + " is not a medication category file: Column Class doesn't exist";
+                        min = std::max(min, col_map["TherapeuticCategory"]);
+                        min = std::max(min, col_map["Assigned number"]);
+                        min = std::max(min, col_map["Class"]);
+                        first_row = false;
+                } else {
+                        if (parts.size() > min) {
+                                const std::string& med_categ = parts[col_map["TherapeuticCategory"]];
+                                const std::string& med_code = parts[col_map["Assigned number"]];
+                                const std::string& med_class = parts[col_map["Class"]];
+                                categ.insert(MedCategory(med_categ,
+                                                         std::atoi(med_code.c_str()),
+                                                         std::atoi(med_class.c_str())));
+                        }
+                }
+        }
+}
+
+void
+csv::load_order_map(const std::string& filename, std::set<Order2Category>& o2c)
+{
+        std::vector<std::vector<std::string>> rows;
+        load_rows(filename, rows);
+
+        bool first_row = true;
+        std::map<std::string, unsigned> col_map;
+        unsigned min = 0;
+        for (std::vector<std::string> parts: rows) {
+                if (first_row) {
+                        std::vector<std::string>& ddl = parts;
+                        if (!set_column_mapping("New Category Number", ddl, col_map))
+                                throw filename + " is not a order2category file: Column New Category Number doesn't exist";
+                        if (!set_column_mapping("OrderName", ddl, col_map))
+                                throw filename + " is not a order2category file: Column OrderName doesn't exist";
+                        min = std::max(min, col_map["New Category Number"]);
+                        min = std::max(min, col_map["OrderName"]);
+                        first_row = false;
+                } else {
+                        if (parts.size() > min) {
+                                const std::string& med_code = parts[col_map["New Category Number"]];
+                                const std::string& order_name = parts[col_map["OrderName"]];
+                                o2c.insert(Order2Category(order_name, std::atoi(med_code.c_str())));
+                        }
+                }
+        }
+}

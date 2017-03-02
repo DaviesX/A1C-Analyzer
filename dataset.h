@@ -8,6 +8,8 @@
 #include "labmeasure.h"
 #include "labfilter.h"
 #include "drugfilter.h"
+#include "medcategory.h"
+#include "order2category.h"
 #include "patientrecord.h"
 #include "delta.h"
 #include "statistics.h"
@@ -28,7 +30,11 @@ void sort(std::vector<csv::LabMeasure>& a);
 void sort(std::vector<csv::MedicationOrder>& a);
 
 void make(const std::vector<csv::LabMeasure>& in, patient_measures_t& out);
-void make(const std::vector<csv::MedicationOrder>& in, patient_orders_t& out);
+void make(const std::vector<csv::MedicationOrder>& in,
+          const std::set<csv::MedCategory>& med_categ,
+          const std::set<csv::Order2Category>& order2categ, patient_orders_t& out);
+
+void join(std::set<csv::Order2Category>& order_map, const std::set<csv::MedCategory>& med_categ);
 
 void filter(const patient_measures_t& measures, const std::set<filter::LabFilter>& filter, patient_measures_t& filtered);
 void filter(const patient_orders_t& orders, const std::set<filter::DrugFilter>& filter, patient_orders_t& filtered);

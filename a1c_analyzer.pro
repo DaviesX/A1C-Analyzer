@@ -29,7 +29,9 @@ SOURCES += main.cpp\
     labfilter.cpp \
     patientrecord.cpp \
     dataset.cpp \
-    statistics.cpp
+    statistics.cpp \
+    medcategory.cpp \
+    order2category.cpp
 
 HEADERS  += mainwindow.h \
     labmeasure.h \
@@ -45,7 +47,9 @@ HEADERS  += mainwindow.h \
     labfilter.h \
     patientrecord.h \
     dataset.h \
-    statistics.h
+    statistics.h \
+    medcategory.h \
+    order2category.h
 
 FORMS    += mainwindow.ui \
     configdialog.ui \

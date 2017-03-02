@@ -56,6 +56,11 @@ csv::MedicationOrder::MedicationOrder(int pid):
 {
 }
 
+csv::MedicationOrder::MedicationOrder():
+        pid(-1)
+{
+}
+
 int
 csv::MedicationOrder::date() const
 {

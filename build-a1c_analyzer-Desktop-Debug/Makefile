@@ -63,7 +63,9 @@ SOURCES       = ../main.cpp \
 		../labfilter.cpp \
 		../patientrecord.cpp \
 		../dataset.cpp \
-		../statistics.cpp moc_mainwindow.cpp \
+		../statistics.cpp \
+		../medcategory.cpp \
+		../order2category.cpp moc_mainwindow.cpp \
 		moc_configdialog.cpp \
 		moc_querydialog.cpp
 OBJECTS       = main.o \
@@ -82,6 +84,8 @@ OBJECTS       = main.o \
 		patientrecord.o \
 		dataset.o \
 		statistics.o \
+		medcategory.o \
+		order2category.o \
 		moc_mainwindow.o \
 		moc_configdialog.o \
 		moc_querydialog.o
@@ -157,7 +161,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../labfilter.h \
 		../patientrecord.h \
 		../dataset.h \
-		../statistics.h ../main.cpp \
+		../statistics.h \
+		../medcategory.h \
+		../order2category.h ../main.cpp \
 		../mainwindow.cpp \
 		../labmeasure.cpp \
 		../medicationorder.cpp \
@@ -172,7 +178,9 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		../labfilter.cpp \
 		../patientrecord.cpp \
 		../dataset.cpp \
-		../statistics.cpp
+		../statistics.cpp \
+		../medcategory.cpp \
+		../order2category.cpp
 QMAKE_TARGET  = a1c-analyzer
 DESTDIR       = 
 TARGET        = a1c-analyzer
@@ -323,8 +331,8 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
-	$(COPY_FILE) --parents ../mainwindow.h ../labmeasure.h ../medicationorder.h ../csv.h ../tst_testcsv.h ../tst_testanalysis.h ../configdialog.h ../drugfilter.h ../database.h ../querydialog.h ../delta.h ../labfilter.h ../patientrecord.h ../dataset.h ../statistics.h $(DISTDIR)/
-	$(COPY_FILE) --parents ../main.cpp ../mainwindow.cpp ../labmeasure.cpp ../medicationorder.cpp ../csv.cpp ../tst_testcsv.cpp ../tst_testanalysis.cpp ../configdialog.cpp ../drugfilter.cpp ../database.cpp ../querydialog.cpp ../delta.cpp ../labfilter.cpp ../patientrecord.cpp ../dataset.cpp ../statistics.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents ../mainwindow.h ../labmeasure.h ../medicationorder.h ../csv.h ../tst_testcsv.h ../tst_testanalysis.h ../configdialog.h ../drugfilter.h ../database.h ../querydialog.h ../delta.h ../labfilter.h ../patientrecord.h ../dataset.h ../statistics.h ../medcategory.h ../order2category.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../main.cpp ../mainwindow.cpp ../labmeasure.cpp ../medicationorder.cpp ../csv.cpp ../tst_testcsv.cpp ../tst_testanalysis.cpp ../configdialog.cpp ../drugfilter.cpp ../database.cpp ../querydialog.cpp ../delta.cpp ../labfilter.cpp ../patientrecord.cpp ../dataset.cpp ../statistics.cpp ../medcategory.cpp ../order2category.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../mainwindow.ui ../configdialog.ui ../querydialog.ui $(DISTDIR)/
 
 
@@ -361,8 +369,11 @@ moc_mainwindow.cpp: ../configdialog.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
 		../delta.h \
+		../statistics.h \
 		../mainwindow.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/davis/a1c_analyzer -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../mainwindow.h -o moc_mainwindow.cpp
 
@@ -375,8 +386,11 @@ moc_querydialog.cpp: ../database.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
 		../delta.h \
+		../statistics.h \
 		../querydialog.h
 	/usr/lib/x86_64-linux-gnu/qt5/bin/moc $(DEFINES) -I/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++-64 -I/home/davis/a1c_analyzer -I/usr/include/x86_64-linux-gnu/qt5 -I/usr/include/x86_64-linux-gnu/qt5/QtWidgets -I/usr/include/x86_64-linux-gnu/qt5/QtGui -I/usr/include/x86_64-linux-gnu/qt5/QtCore -I. -I/usr/include/c++/6 -I/usr/include/x86_64-linux-gnu/c++/6 -I/usr/include/c++/6/backward -I/usr/lib/gcc/x86_64-linux-gnu/6/include -I/usr/local/include -I/usr/lib/gcc/x86_64-linux-gnu/6/include-fixed -I/usr/include/x86_64-linux-gnu -I/usr/include ../querydialog.h -o moc_querydialog.cpp
 
@@ -413,8 +427,11 @@ main.o: ../main.cpp ../mainwindow.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
 		../delta.h \
+		../statistics.h \
 		../tst_testcsv.h \
 		../tst_testanalysis.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o main.o ../main.cpp
@@ -428,8 +445,11 @@ mainwindow.o: ../mainwindow.cpp ../mainwindow.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
 		../delta.h \
+		../statistics.h \
 		ui_mainwindow.h \
 		../csv.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../mainwindow.cpp
@@ -444,6 +464,8 @@ csv.o: ../csv.cpp ../medicationorder.h \
 		../labmeasure.h \
 		../delta.h \
 		../csv.h \
+		../medcategory.h \
+		../order2category.h \
 		../drugfilter.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o csv.o ../csv.cpp
 
@@ -451,6 +473,8 @@ tst_testcsv.o: ../tst_testcsv.cpp ../labmeasure.h \
 		../medicationorder.h \
 		../delta.h \
 		../csv.h \
+		../medcategory.h \
+		../order2category.h \
 		../drugfilter.h \
 		../tst_testcsv.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tst_testcsv.o ../tst_testcsv.cpp
@@ -458,11 +482,14 @@ tst_testcsv.o: ../tst_testcsv.cpp ../labmeasure.h \
 tst_testanalysis.o: ../tst_testanalysis.cpp ../csv.h \
 		../medicationorder.h \
 		../labmeasure.h \
+		../medcategory.h \
+		../order2category.h \
 		../drugfilter.h \
 		../delta.h \
 		../dataset.h \
 		../labfilter.h \
 		../patientrecord.h \
+		../statistics.h \
 		../tst_testanalysis.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o tst_testanalysis.o ../tst_testanalysis.cpp
 
@@ -479,8 +506,11 @@ database.o: ../database.cpp ../database.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
-		../delta.h
+		../delta.h \
+		../statistics.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o database.o ../database.cpp
 
 querydialog.o: ../querydialog.cpp ../querydialog.h \
@@ -490,8 +520,11 @@ querydialog.o: ../querydialog.cpp ../querydialog.h \
 		../drugfilter.h \
 		../labfilter.h \
 		../dataset.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
 		../delta.h \
+		../statistics.h \
 		ui_querydialog.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o querydialog.o ../querydialog.cpp
 
@@ -514,12 +547,21 @@ dataset.o: ../dataset.cpp ../labmeasure.h \
 		../dataset.h \
 		../labfilter.h \
 		../drugfilter.h \
+		../medcategory.h \
+		../order2category.h \
 		../patientrecord.h \
-		../delta.h
+		../delta.h \
+		../statistics.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o dataset.o ../dataset.cpp
 
 statistics.o: ../statistics.cpp ../statistics.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o statistics.o ../statistics.cpp
+
+medcategory.o: ../medcategory.cpp ../medcategory.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o medcategory.o ../medcategory.cpp
+
+order2category.o: ../order2category.cpp ../order2category.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o order2category.o ../order2category.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

@@ -35,6 +35,7 @@ public:
                         bool is_prn,
                         const std::string& instructions);
         MedicationOrder(int pid);
+        MedicationOrder();
 
         int		date() const;
         int		end_date() const;
@@ -64,6 +65,7 @@ public:
         std::string     frequency;
         bool            is_prn;
         std::string     instructions;
+        int		med_class;
 };
 
 inline std::ostream& operator <<(std::ostream& os, const MedicationOrder& order)

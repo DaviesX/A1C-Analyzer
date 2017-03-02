@@ -1,3 +1,5 @@
+#include <string>
+#include <set>
 #include <limits>
 #include <algorithm>
 #include <map>
@@ -60,6 +62,8 @@ struct SM {
         int 			trigger_date = 0;
         categorized_orders_t	curr_orders;
         int			curr_date;
+        bool			is_intens = false;
+        csv::MedicationOrder	last_intens;
 
         void transit(const csv::LabMeasure& lab, int date, float a1c_margin)
         {
@@ -85,6 +89,8 @@ struct SM {
                         if (curr_date < order_found.end_date()) {
                                 // Intensification.
                                 is_triggered_m = true;
+                                is_intens = true;
+                                last_intens = it->second;
                         } else if (curr_date > order_found.end_date() + 5) {
                                 // Expired, update.
                                 is_triggered_m = true;
@@ -92,6 +98,8 @@ struct SM {
                                 if (order.dose > order_found.dose) {
                                         // Intensification.
                                         is_triggered_m = true;
+                                        is_intens = true;
+                                        last_intens = it->second;
                                 } else {
                                         // Nothing changed, just a continuation.
                                         is_triggered_m = false;
@@ -120,6 +128,10 @@ struct SM {
                         delta.delta_tm = static_cast<int>(curr_date) - static_cast<int>(trigger_date);
                 } else {
                         delta.delta_tm = -1;
+                }
+                if (is_intens && last_intens.med_class != -1) {
+                        delta.trigger_class[last_intens.med_class] = true;
+                        delta.what = last_intens.med_category;
                 }
         }
 };
@@ -156,14 +168,31 @@ analysis::PatientRecord::get_analysis(float a1c, std::vector<csv::SimpleDelta>& 
 
         for (unsigned i = 0; i < detailed.size(); i ++) {
                 int date = detailed[i].date;
+
+                std::set<std::string> whats;
+
                 csv::SimpleDelta curr_delta = detailed[i];
-                while (i < detailed.size() && date == detailed[i + 1].date) {
+                whats.insert(curr_delta.what);
+                while (i + 1 < detailed.size() && date == detailed[i + 1].date) {
                         for (unsigned k = 0; k < sizeof(curr_delta.trigger_class); k ++) {
                                 curr_delta.trigger_class[k] |= detailed[i + 1].trigger_class[k];
                         }
                         curr_delta.medication_changed |= detailed[i + 1].medication_changed;
+                        whats.insert(detailed[i + 1].what);
                         i ++;
                 }
+
+                std::string s_what;
+                for (auto it = whats.begin(); it != whats.end(); ) {
+                        if (!it->empty()) {
+                                s_what += *it;
+                                ++ it;
+                                if (it != whats.end()) {
+                                        s_what += "/";
+                                }
+                        } else	++ it;
+                }
+                curr_delta.what = s_what;
                 deltas.push_back(curr_delta);
         }
 }

@@ -23,7 +23,10 @@ public:
                    << "Delta_TM,"
                    << "Triggered,"
                    << "Recovered,"
-                   << "MedicationChanged";
+                   << "MedicationChanged,"
+                   << "Due to class 0,"
+                   << "Due to class 1,"
+                   << "What";
         }
 
 public:
@@ -39,7 +42,8 @@ public:
         bool 		recovered = false;
         bool 		medication_changed = false;
         int 		date = 0;
-        bool		trigger_class[4];
+        bool		trigger_class[2];
+        std::string	what;
 };
 
 class Delta: public SimpleDelta
@@ -82,7 +86,10 @@ public:
                    << "Delta_TM,"
                    << "Triggered,"
                    << "Recovered,"
-                   << "MedicationChanged";
+                   << "MedicationChanged,"
+                   << "Due to class 0,"
+                   << "Due to class 1,"
+                   << "What";
         }
 
         void write(std::ostream& os) const;
